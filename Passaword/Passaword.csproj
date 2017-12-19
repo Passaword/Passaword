@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageOutputPath>$(SolutionDir)../packages</PackageOutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>TimCodes.NET</Authors>
+    <Company>TimCodes.NET</Company>
+    <Description>Open source one-time secret sharing tool</Description>
+    <PackageLicenseUrl>https://github.com/Passaword/Passaword/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Passaword/Passaword</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Passaword/Passaword</RepositoryUrl>
+    <PackageTags>core cryptography</PackageTags>
+    <PackageIconUrl>https://avatars2.githubusercontent.com/u/34607635?s=200&amp;v=4</PackageIconUrl>
+    <Version>1.0.4</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Passaword.Constants\Passaword.Constants.csproj" />
+    <ProjectReference Include="..\Passaword.Messaging\Passaword.Messaging.csproj" />
+    <ProjectReference Include="..\Passaword.Utils\Passaword.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.http.abstractions\2.0.1\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.configuration.abstractions\2.0.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.logging.abstractions\2.0.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
