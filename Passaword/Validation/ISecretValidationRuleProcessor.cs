@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
 using Passaword.Constants;
 
 namespace Passaword.Validation
@@ -9,7 +9,7 @@ namespace Passaword.Validation
         ValidationStage ValidationStage { get; set; }
         string SerializeData<T>(T data);
         T DeserializeData<T>(string validationData);
-        void CreateRule(SecretEncryptionContext encryptionContext, HttpContext context);
-        bool Validate(SecretDecryptionContext secretContext, string validationData, HttpContext context);
+        void CreateRule(SecretEncryptionContext encryptionContext, ClaimsPrincipal principal);
+        bool Validate(SecretDecryptionContext secretContext, string validationData, ClaimsPrincipal principal);
     }
 }

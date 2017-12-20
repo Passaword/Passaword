@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 
 namespace Passaword
 {
@@ -19,6 +20,20 @@ namespace Passaword
         public SecretDecryptionContext CreateDecryptionContext()
         {
             return (SecretDecryptionContext)_serviceProvider.GetService(typeof(SecretDecryptionContext));
+        }
+
+        public SecretEncryptionContext CreateEncryptionContext(ClaimsPrincipal principal)
+        {
+            var ctx = CreateEncryptionContext();
+            ctx.Principal = principal;
+            return ctx;
+        }
+
+        public SecretDecryptionContext CreateDecryptionContext(ClaimsPrincipal principal)
+        {
+            var ctx = CreateDecryptionContext();
+            ctx.Principal = principal;
+            return ctx;
         }
     }
 }

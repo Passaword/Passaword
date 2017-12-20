@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Web;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Passaword.Configuration.Options;
@@ -14,6 +13,7 @@ using Passaword.Storage;
 using Passaword.Validation;
 using Passaword.Validation.Expiry;
 using Passaword.Validation.Passphrase;
+using Passaword.Validation.UserEmail;
 
 namespace Passaword.Configuration
 {
@@ -90,6 +90,24 @@ namespace Passaword.Configuration
             return pb;
         }
 
+        public static IPassawordBuilder AddUserEmailValidation(this IPassawordBuilder pb, Action<UserEmailValidatorOptions> options = null)
+        {
+            pb.Services.AddTransient<UserEmailValidationRuleProcessor, UserEmailValidationRuleProcessor>();
+            var serviceProvider = pb.Services.BuildServiceProvider();
+            var userEmail = serviceProvider.GetService<UserEmailValidationRuleProcessor>();
+            var context = serviceProvider.GetService<PassawordContext>();
+
+            var o = new UserEmailValidatorOptions();
+            options?.Invoke(o);
+
+            userEmail.IsRequired = o.IsRequired;
+            userEmail.ValidationStage = o.ValidationStage;
+
+            userEmail.ValidationStage = Constants.ValidationStage.AfterGet;
+            context.SecretValidationRuleProcessors.Add(userEmail);
+            return pb;
+        }
+
         public static IPassawordBuilder AddEmailMessaging(this IPassawordBuilder pb)
         {
             var serviceProvider = pb.Services.BuildServiceProvider();
@@ -101,12 +119,12 @@ namespace Passaword.Configuration
 
             context.OnSecretEncrypted += async (ctx, e) =>
             {
-                if (e.Context.InputData.ContainsKey(UserInputConstants.EmailAddress))
+                if (e.Context.GetInput(UserInputConstants.EmailAddress) != null && !e.Context.GetInput<bool>(UserInputConstants.DoNotSendEmail))
                 {
                     var emailService = e.ServiceProvider.GetService<IEmailMessageChannel>();
                     var url = config["Passaword:SecretUrl"].Replace("{key}", HttpUtility.UrlEncode(e.Context.Secret.Id));
                     await emailService.SendAsync(
-                        new EmailMessage(to: new EmailAddress(e.Context.InputData[UserInputConstants.EmailAddress]))
+                        new EmailMessage(to: new EmailAddress(e.Context.GetInput(UserInputConstants.EmailAddress)))
                         {
                             Subject = config["Passaword:EmailConfiguration:EncryptSubject"],
                             Content = url

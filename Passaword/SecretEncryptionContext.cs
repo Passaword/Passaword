@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Passaword.Constants;
 using Passaword.Encryption;
@@ -14,7 +14,6 @@ namespace Passaword
 {
     public class SecretEncryptionContext : IDisposable
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISecretEncryptor _secretEncryptor;
         private readonly ISecretStore _secretStore;
         private readonly PassawordContext _context;
@@ -23,14 +22,12 @@ namespace Passaword
 
         public SecretEncryptionContext(
             IKeyGenerator keyGenerator, 
-            IHttpContextAccessor httpContextAccessor,
             ISecretEncryptor secretEncryptor,
             ISecretStore secretStore,
             PassawordContext context,
             EncryptionEventArgs eventArgs,
             ILogger<SecretEncryptionContext> logger)
         {
-            _httpContextAccessor = httpContextAccessor;
             _secretEncryptor = secretEncryptor;
             _secretStore = secretStore;
             _context = context;
@@ -42,18 +39,45 @@ namespace Passaword
         }
 
         public string EncryptionKey { get; set; }
-        public HttpContext HttpContext => _httpContextAccessor.HttpContext;
-        public IDictionary<string, string> InputData { get; set; } = new Dictionary<string, string>();
+        public ClaimsPrincipal Principal { get; set; }
+        public IDictionary<string, object> InputData { get; set; } = new Dictionary<string, object>();
         public IList<SecretProperty> SecretProperties { get; set; } = new List<SecretProperty>();
-        public string UnencryptedSecret => InputData.ContainsKey(UserInputConstants.Secret) ? InputData[UserInputConstants.Secret] : "";
+        public string UnencryptedSecret => InputData.ContainsKey(UserInputConstants.Secret) ? GetInput(UserInputConstants.Secret) : "";
         public Secret Secret { get; set; } = new Secret();
+
+        public virtual string GetInput(string key)
+        {
+            return GetInput<string>(key);
+        }
+
+        public virtual T GetInput<T>(string key)
+        {
+            if (!InputData.ContainsKey(key)) return default(T);
+
+            var value = InputData[key];
+            if (value is T variable)
+            {
+                return variable;
+            }
+            else
+            {
+                try
+                {
+                    return (T)Convert.ChangeType(value, typeof(T));
+                }
+                catch (InvalidCastException)
+                {
+                    return default(T);
+                }
+            }
+        }
 
         public virtual void AddRules()
         {
             foreach (var rule in _context.SecretValidationRuleProcessors)
             {
                 _logger.LogInformation($"Adding validation rule {rule.Name} to context");
-                rule.CreateRule(this, _httpContextAccessor.HttpContext);
+                rule.CreateRule(this, Principal);
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using Passaword.Constants;
 
 namespace Passaword.Validation
@@ -10,7 +10,7 @@ namespace Passaword.Validation
         private readonly IServiceProvider _serviceProvider;
         private readonly PassawordContext _context;
         private SecretDecryptionContext _secretContext;
-        private HttpContext _httpContext;
+        private ClaimsPrincipal _principal;
 
         public DefaultSecretValidator(IServiceProvider serviceProvider, PassawordContext context)
         {
@@ -18,10 +18,10 @@ namespace Passaword.Validation
             _context = context;
         }
 
-        public virtual bool Validate(SecretDecryptionContext secretContext, HttpContext httpContext, ValidationStage stage)
+        public virtual bool Validate(SecretDecryptionContext secretContext, ClaimsPrincipal principal, ValidationStage stage)
         {
             _secretContext = secretContext;
-            _httpContext = httpContext;
+            _principal = principal;
 
             foreach (var rule in _secretContext.Secret.SecretValidationRules)
             {
@@ -40,7 +40,7 @@ namespace Passaword.Validation
 
             if (validator.ValidationStage != stage) return true;
 
-            return validator.Validate(_secretContext, rule.ValidationData, _httpContext);
+            return validator.Validate(_secretContext, rule.ValidationData, _principal);
         }
     }
 }

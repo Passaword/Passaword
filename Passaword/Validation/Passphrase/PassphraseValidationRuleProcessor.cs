@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Passaword.Constants;
 using Passaword.KeyGen;
@@ -34,16 +34,15 @@ namespace Passaword.Validation.Passphrase
             return key.ToHex();
         }
 
-        public override void CreateRule(SecretEncryptionContext encryptionContext, HttpContext context)
+        public override void CreateRule(SecretEncryptionContext encryptionContext, ClaimsPrincipal principal)
         {
-            if (IsRequired && (!encryptionContext.InputData.ContainsKey(UserInputConstants.Passphrase) ||
-                               string.IsNullOrEmpty(encryptionContext.InputData[UserInputConstants.Passphrase])))
+            if (IsRequired && (string.IsNullOrEmpty(encryptionContext.GetInput(UserInputConstants.Passphrase))))
             {
                 throw new ArgumentException("Passphrase is required");
             }
-            if (!encryptionContext.InputData.ContainsKey(UserInputConstants.Passphrase)) return;
+            if (encryptionContext.GetInput(UserInputConstants.Passphrase) == null) return;
 
-            var passphrase = encryptionContext.InputData[UserInputConstants.Passphrase];
+            var passphrase = encryptionContext.GetInput(UserInputConstants.Passphrase);
             var passphraseData = new PassphraseValidationData
             {
                 Algorithm = PassphraseAlgorithm.Pbkdf2Sha1,
@@ -60,11 +59,11 @@ namespace Passaword.Validation.Passphrase
             });
         }
 
-        public override bool Validate(SecretDecryptionContext decryptionContext, string validationData, HttpContext context)
+        public override bool Validate(SecretDecryptionContext decryptionContext, string validationData, ClaimsPrincipal principal)
         {
             var passphraseData = DeserializeData<PassphraseValidationData>(validationData);
 
-            var userSuppliedPassphrase = decryptionContext.InputData[UserInputConstants.Passphrase];
+            var userSuppliedPassphrase = decryptionContext.GetInput(UserInputConstants.Passphrase);
 
             switch (passphraseData.Algorithm)
             {

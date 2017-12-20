@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Passaword.Constants;
 using Passaword.Encryption;
@@ -16,7 +16,6 @@ namespace Passaword
     public class SecretDecryptionContext : IDisposable
     {
         private readonly ISecretStore _secretStore;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISecretEncryptor _secretEncryptor;
         private readonly ISecretValidator _secretValidator;
         private readonly IServiceProvider _serviceProvider;
@@ -28,7 +27,6 @@ namespace Passaword
         public SecretDecryptionContext(
             IKeyGenerator keyGenerator,
             ISecretStore secretStore,
-            IHttpContextAccessor httpContextAccessor,
             ISecretEncryptor secretEncryptor,
             ISecretValidator secretValidator,
             IServiceProvider serviceProvider,
@@ -38,7 +36,6 @@ namespace Passaword
             ILogger<SecretDecryptionContext> logger)
         {
             _secretStore = secretStore;
-            _httpContextAccessor = httpContextAccessor;
             _secretEncryptor = secretEncryptor;
             _secretValidator = secretValidator;
             _serviceProvider = serviceProvider;
@@ -54,9 +51,36 @@ namespace Passaword
 
         public Secret Secret { get; set; }
         public string EncryptionKey { get; set; }
-        public HttpContext HttpContext => _httpContextAccessor.HttpContext;
-        public IDictionary<string, string> InputData { get; set; } = new Dictionary<string, string>();
-        
+        public ClaimsPrincipal Principal { get; set; }
+        public IDictionary<string, object> InputData { get; set; } = new Dictionary<string, object>();
+
+        public virtual string GetInput(string key)
+        {
+            return GetInput<string>(key);
+        }
+
+        public virtual T GetInput<T>(string key)
+        {
+            if (!InputData.ContainsKey(key)) return default(T);
+
+            var value = InputData[key];
+            if (value is T variable)
+            {
+                return variable;
+            }
+            else
+            {
+                try
+                {
+                    return (T)Convert.ChangeType(value, typeof(T));
+                }
+                catch (InvalidCastException)
+                {
+                    return default(T);
+                }
+            }
+        }
+
         public virtual string DecryptSecret()
         {
             var decryptorType = Type.GetType(Secret.EncryptionType);
@@ -69,7 +93,7 @@ namespace Passaword
 
         public virtual bool ValidateSecret(ValidationStage stage)
         {
-            return _secretValidator.Validate(this, _httpContextAccessor.HttpContext, stage);
+            return _secretValidator.Validate(this, Principal, stage);
         }
 
         public virtual async Task<bool> PreProcessAsync(string id)

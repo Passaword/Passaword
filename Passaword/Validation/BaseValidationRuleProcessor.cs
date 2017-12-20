@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using Newtonsoft.Json;
 using Passaword.Constants;
 
@@ -19,12 +19,12 @@ namespace Passaword.Validation
             return JsonConvert.DeserializeObject<T>(validationData);
         }
         
-        public virtual void CreateRule(SecretEncryptionContext encryptionContext, HttpContext context)
+        public virtual void CreateRule(SecretEncryptionContext encryptionContext, ClaimsPrincipal principal)
         {
             throw new NotImplementedException("Rule setup not implemented");
         }
 
-        public virtual bool Validate(SecretDecryptionContext secret, string validationData, HttpContext context)
+        public virtual bool Validate(SecretDecryptionContext secret, string validationData, ClaimsPrincipal principal)
         {
             throw new NotImplementedException("Rule validation not implemented");
         }
