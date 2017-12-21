@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ using Passaword.Constants;
 using Passaword.Encryption;
 using Passaword.Events;
 using Passaword.KeyGen;
+using Passaword.Messaging;
 using Passaword.Messaging.Email;
 using Passaword.Storage;
 using Passaword.Validation;
@@ -42,7 +44,8 @@ namespace Passaword.Configuration
             services.AddTransient<DecryptionEventArgs, DecryptionEventArgs>();
             services.AddTransient<DecryptionFailedEventArgs, DecryptionFailedEventArgs>();
             services.AddTransient<ISecretContextService, DefaultSecretContextService>();
-            
+            services.AddTransient<IMessageContentStore, DefaultMessageContentStore>();
+
             return new PassawordBuilder()
             {
                 Services = services
@@ -127,7 +130,10 @@ namespace Passaword.Configuration
                         new EmailMessage(to: new EmailAddress(e.Context.GetInput(UserInputConstants.EmailAddress)))
                         {
                             Subject = config["Passaword:EmailConfiguration:EncryptSubject"],
-                            Content = url
+                            Content = await emailService.FormatMessage(EmailConstants.MessageTypes.Encrypted, new Dictionary<string,string>
+                            {
+                                { "url", url }
+                            })
                         });
                 }
             };
@@ -143,7 +149,10 @@ namespace Passaword.Configuration
                         new EmailMessage(to: new EmailAddress(email.Data))
                         {
                             Subject = config["Passaword:EmailConfiguration:DecryptSubject"],
-                            Content = config["Passaword:EmailConfiguration:DecryptContent"]
+                            Content = await emailService.FormatMessage(EmailConstants.MessageTypes.Decrypted, new Dictionary<string, string>
+                            {
+                                { "secret", e.Context.Secret.Id }
+                            })
                         });
                 }
             };

@@ -20,13 +20,15 @@ namespace Passaword.Messaging.Email
     public class EmailMessageChannel : IEmailMessageChannel
     {
         private readonly IEmailConfiguration _config;
+        private readonly IMessageContentStore _contentStore;
 
-        public EmailMessageChannel(IEmailConfiguration config)
+        public EmailMessageChannel(IEmailConfiguration config, IMessageContentStore contentStore)
         {
             _config = config;
+            _contentStore = contentStore;
         }
         
-        public IMessage FormatMessage(string content, IDictionary<string, object> extraData)
+        public IMessage GetMessage(string content, IDictionary<string, object> extraData)
         {
             EmailMessage message = new EmailMessage
             {
@@ -50,6 +52,13 @@ namespace Passaword.Messaging.Email
                 message.ReplyTo = (EmailAddress) extraData[EmailConstants.ReplyTo];
             }
             return message;
+        }
+
+        public async Task<string> FormatMessage(string messageType, IDictionary<string, string> data)
+        { 
+            string content = await _contentStore.GetTemplate(messageType);
+
+            return _contentStore.ReplaceTags(content, data);
         }
 
         private TextFormat GetFormat(EmailConstants.TextFormats format)

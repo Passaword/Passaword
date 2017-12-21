@@ -6,7 +6,8 @@ namespace Passaword.Messaging
 {
     public interface IMessageChannel
     {
-        IMessage FormatMessage(string content, IDictionary<string, object> extraData);
+        IMessage GetMessage(string content, IDictionary<string, object> extraData);
+        Task<string> FormatMessage(string messageType, IDictionary<string, string> data);
         Task SendAsync(IMessage message);
     }
 }

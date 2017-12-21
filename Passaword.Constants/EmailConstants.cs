@@ -15,5 +15,11 @@ namespace Passaword.Constants
             Html,
             PlainText
         }
+
+        public class MessageTypes
+        {
+            public const string Encrypted = "Encrypted";
+            public const string Decrypted = "Decrypted";
+        }
     }
 }
