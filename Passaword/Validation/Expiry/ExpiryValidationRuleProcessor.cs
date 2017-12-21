@@ -41,13 +41,24 @@ namespace Passaword.Validation.Expiry
             });
         }
 
-        public override bool Validate(SecretDecryptionContext decryptionContext, string validationData, ClaimsPrincipal principal)
+        public override ValidationResult Validate(SecretDecryptionContext decryptionContext, string validationData, ClaimsPrincipal principal)
         {
             var expiryData = DeserializeData<ExpiryValidationData>(validationData);
 
             var isValid = !expiryData.Expiry.HasValue ||  DateTime.Now < expiryData.Expiry;
             _logger.LogDebug($"Validating expiry: {isValid}");
-            return isValid;
+            if (isValid)
+            {
+                return ValidationResult.SuccessResult;
+            }
+            else
+            {
+                return new ValidationResult(false)
+                {
+                    Error = "Secret expired",
+                    ValidationPointOfFailure = this.Name
+                };
+            }
         }
     }
 }

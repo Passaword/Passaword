@@ -5,7 +5,7 @@ namespace Passaword.Validation
 {
     public interface ISecretValidator
     {
-        bool Validate(SecretDecryptionContext secretContext, ClaimsPrincipal principal, ValidationStage stage);
-        bool ValidateRule(SecretValidationRule rule, ValidationStage stage);
+        ValidationResult Validate(SecretDecryptionContext secretContext, ClaimsPrincipal principal, ValidationStage stage);
+        ValidationResult ValidateRule(SecretValidationRule rule, ValidationStage stage);
     }
 }

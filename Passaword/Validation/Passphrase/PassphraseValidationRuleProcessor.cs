@@ -59,19 +59,19 @@ namespace Passaword.Validation.Passphrase
             });
         }
 
-        public override bool Validate(SecretDecryptionContext decryptionContext, string validationData, ClaimsPrincipal principal)
+        public override ValidationResult Validate(SecretDecryptionContext decryptionContext, string validationData, ClaimsPrincipal principal)
         {
             var passphraseData = DeserializeData<PassphraseValidationData>(validationData);
 
             var userSuppliedPassphrase = decryptionContext.GetInput(UserInputConstants.Passphrase);
-
+            if (string.IsNullOrEmpty(userSuppliedPassphrase)) return ValidationResult.SuccessResult;
             switch (passphraseData.Algorithm)
             {
                 case PassphraseAlgorithm.Pbkdf2Sha1:
                 default:
                     decryptionContext.EncryptionKey = GetEncryptionKey(userSuppliedPassphrase, passphraseData);
                     _logger.LogDebug($"Using passphrase {userSuppliedPassphrase} to set encryption key to {decryptionContext.EncryptionKey}");
-                    return true;
+                    return ValidationResult.SuccessResult;
             }
 
         }

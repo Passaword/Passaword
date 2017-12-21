@@ -1,4 +1,5 @@
 ﻿using System;
+using Passaword.Validation;
 
 namespace Passaword.Events
 {
@@ -14,5 +15,6 @@ namespace Passaword.Events
         public SecretDecryptionContext Context { get; set; }
         public string FailureReason { get; set; }
         public Exception Exception { get; set; }
+        public ValidationResult ValidationResult { get; set; }
     }
 }

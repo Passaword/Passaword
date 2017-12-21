@@ -91,22 +91,23 @@ namespace Passaword
             return _secretEncryptor.Decrypt(Secret.EncryptedText, EncryptionKey);
         }
 
-        public virtual bool ValidateSecret(ValidationStage stage)
+        public virtual ValidationResult ValidateSecret(ValidationStage stage)
         {
             return _secretValidator.Validate(this, Principal, stage);
         }
 
-        public virtual async Task<bool> PreProcessAsync(string id)
+        public virtual async Task<ValidationResult> PreProcessAsync(string id)
         {
             var secret = await _secretStore.GetAsync(id);
             Secret = secret ?? throw new KeyNotFoundException("Invalid secret ID");
 
-            bool isValid = ValidateSecret(ValidationStage.AfterGet);
-            if (!isValid)
+            ValidationResult result = ValidateSecret(ValidationStage.AfterGet);
+            _decryptEventArgs.ValidationResult = result;
+            if (!result.IsValid)
             {
                 _context.OnPreValidationFailed?.Invoke(this, _decryptFailedEventArgs);
             }
-            return isValid;
+            return result;
         }
 
         public virtual async Task IncrementFailedDecryptions()
@@ -136,8 +137,8 @@ namespace Passaword
             }
 
             Secret = secret;
-
-            if (ValidateSecret(ValidationStage.BeforeDecrypt))
+            var result = ValidateSecret(ValidationStage.BeforeDecrypt);
+            if (result.IsValid)
             {
                 try
                 {
@@ -152,6 +153,11 @@ namespace Passaword
 
                     _decryptFailedEventArgs.FailureReason = e.Message;
                     _decryptFailedEventArgs.Exception = e;
+                    _decryptFailedEventArgs.ValidationResult = new ValidationResult(false)
+                    {
+                        ValidationPointOfFailure = "Decryption",
+                        Error = "Decryption failed"
+                    };
                     _context.OnDecryptionFailed?.Invoke(this, _decryptFailedEventArgs);
                     return null;
                 }
@@ -159,7 +165,7 @@ namespace Passaword
             else
             {
                 await IncrementFailedDecryptions();
-
+                _decryptFailedEventArgs.ValidationResult = result;
                 _decryptFailedEventArgs.FailureReason = "Validation failed";
                 _context.OnDecryptionFailed?.Invoke(this, _decryptFailedEventArgs);
                 return null;

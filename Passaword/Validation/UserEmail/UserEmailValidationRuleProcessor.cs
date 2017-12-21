@@ -45,21 +45,36 @@ namespace Passaword.Validation.UserEmail
             });
         }
 
-        public override bool Validate(SecretDecryptionContext decryptionContext, string validationData, ClaimsPrincipal principal)
+        public override ValidationResult Validate(SecretDecryptionContext decryptionContext, string validationData, ClaimsPrincipal principal)
         {
             var emailData = DeserializeData<UserEmailValidationData>(validationData);
             if (emailData.MustLogin)
             {
                 if (principal == null || !principal.Identity.IsAuthenticated)
                 {
-                    return false;
+                    return new ValidationResult(false)
+                    {
+                        Error = "User is not authenticated",
+                        ValidationPointOfFailure = this.Name
+                    };
                 }
 
                 var userEmail = principal.FindFirst(ClaimTypes.Email)?.Value;
 
-                return userEmail == emailData.Email;
+                if (userEmail == emailData.Email)
+                {
+                    return ValidationResult.SuccessResult;
+                }
+                else
+                {
+                    return new ValidationResult(false)
+                    {
+                        Error = "Authenticated user does not match target user",
+                        ValidationPointOfFailure = this.Name
+                    };
+                }
             }
-            return true;
+            return ValidationResult.SuccessResult;
         }
     }
 }

@@ -18,27 +18,29 @@ namespace Passaword.Validation
             _context = context;
         }
 
-        public virtual bool Validate(SecretDecryptionContext secretContext, ClaimsPrincipal principal, ValidationStage stage)
+        public virtual ValidationResult Validate(SecretDecryptionContext secretContext, ClaimsPrincipal principal, ValidationStage stage)
         {
             _secretContext = secretContext;
             _principal = principal;
 
             foreach (var rule in _secretContext.Secret.SecretValidationRules)
             {
-                if (!ValidateRule(rule, stage))
+                var result = ValidateRule(rule, stage);
+                if (!result.IsValid)
                 {
-                    return false;
+                    return result;
                 }
             }
-            return true;
+            return ValidationResult.SuccessResult;
         }
 
-        public virtual bool ValidateRule(SecretValidationRule rule, ValidationStage stage)
+        public virtual ValidationResult ValidateRule(SecretValidationRule rule, ValidationStage stage)
         {
             var validator = _context.SecretValidationRuleProcessors.FirstOrDefault(q => q.Name == rule.Validator);
             if (validator == null) throw new Exception($"Validation rule type {rule.Validator} not registered");
 
-            if (validator.ValidationStage != stage) return true;
+            if (validator.ValidationStage != stage)
+                return ValidationResult.SuccessResult;
 
             return validator.Validate(_secretContext, rule.ValidationData, _principal);
         }

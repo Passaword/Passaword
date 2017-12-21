@@ -24,7 +24,7 @@ namespace Passaword.Validation
             throw new NotImplementedException("Rule setup not implemented");
         }
 
-        public virtual bool Validate(SecretDecryptionContext secret, string validationData, ClaimsPrincipal principal)
+        public virtual ValidationResult Validate(SecretDecryptionContext secret, string validationData, ClaimsPrincipal principal)
         {
             throw new NotImplementedException("Rule validation not implemented");
         }

@@ -10,6 +10,6 @@ namespace Passaword.Validation
         string SerializeData<T>(T data);
         T DeserializeData<T>(string validationData);
         void CreateRule(SecretEncryptionContext encryptionContext, ClaimsPrincipal principal);
-        bool Validate(SecretDecryptionContext secretContext, string validationData, ClaimsPrincipal principal);
+        ValidationResult Validate(SecretDecryptionContext secretContext, string validationData, ClaimsPrincipal principal);
     }
 }
