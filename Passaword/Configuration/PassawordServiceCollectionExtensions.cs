@@ -111,12 +111,15 @@ namespace Passaword.Configuration
             return pb;
         }
 
-        public static IPassawordBuilder AddEmailMessaging(this IPassawordBuilder pb)
+        public static IPassawordBuilder AddEmailMessaging(this IPassawordBuilder pb, Action<EmailMessagingOptions> options = null)
         {
             var serviceProvider = pb.Services.BuildServiceProvider();
             var config = serviceProvider.GetService<IConfiguration>();
             pb.Services.AddSingleton<IEmailConfiguration>(config.GetSection("Passaword:EmailConfiguration").Get<EmailConfiguration>());
             pb.Services.AddTransient<IEmailMessageChannel, EmailMessageChannel>();
+
+            var o = new EmailMessagingOptions();
+            options?.Invoke(o);
 
             var context = serviceProvider.GetService<PassawordContext>();
 
@@ -138,24 +141,28 @@ namespace Passaword.Configuration
                 }
             };
 
-            context.OnSecretDecrypted += async (ctx, e) =>
+            if (o.SendOwnerEmailOnDecrypt)
             {
-                var email = e.Context.Secret.SecretProperties.FirstOrDefault(q =>
-                    q.Type == SecretProperties.OwnerEmail);
-                if (email != null)
+                context.OnSecretDecrypted += async (ctx, e) =>
                 {
-                    var emailService = e.ServiceProvider.GetService<IEmailMessageChannel>();
-                    await emailService.SendAsync(
-                        new EmailMessage(to: new EmailAddress(email.Data))
-                        {
-                            Subject = config["Passaword:EmailConfiguration:DecryptSubject"],
-                            Content = await emailService.FormatMessage(EmailConstants.MessageTypes.Decrypted, new Dictionary<string, string>
+                    var email = e.Context.Secret.SecretProperties.FirstOrDefault(q =>
+                        q.Type == SecretProperties.OwnerEmail);
+                    if (email != null)
+                    {
+                        var emailService = e.ServiceProvider.GetService<IEmailMessageChannel>();
+                        await emailService.SendAsync(
+                            new EmailMessage(to: new EmailAddress(email.Data))
                             {
-                                { "secret", e.Context.Secret.Id }
-                            })
-                        });
-                }
-            };
+                                Subject = config["Passaword:EmailConfiguration:DecryptSubject"],
+                                Content = await emailService.FormatMessage(EmailConstants.MessageTypes.Decrypted,
+                                    new Dictionary<string, string>
+                                    {
+                                        {"secret", e.Context.Secret.Id}
+                                    })
+                            });
+                    }
+                };
+            }
 
             return pb;
         }

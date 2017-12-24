@@ -11,6 +11,8 @@ namespace Passaword.Encryption
     {
         private readonly ILogger<Aes256SecretEncryptor> _logger;
 
+        public static string Name = "Aes256";
+
         public Aes256SecretEncryptor(ILogger<Aes256SecretEncryptor> logger)
         {
             _logger = logger;

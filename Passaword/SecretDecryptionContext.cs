@@ -83,7 +83,11 @@ namespace Passaword
 
         public virtual string DecryptSecret()
         {
-            var decryptorType = Type.GetType(Secret.EncryptionType);
+            if (!EncryptorMapping.ForwardMapping.ContainsKey(Secret.EncryptionType))
+            {
+                throw new Exception($"Could not find encryptor type {Secret.EncryptionType}");
+            }
+            var decryptorType = Type.GetType(EncryptorMapping.ForwardMapping[Secret.EncryptionType]);
             if (decryptorType == null) throw new Exception($"Could not find encryptor type {Secret.EncryptionType}");
             var decryptor = _serviceProvider.GetService(decryptorType) as ISecretEncryptor;
             if (decryptor == null) throw new Exception($"Encryption type {Secret.EncryptionType} does not inherit from ISecretEncryptor");
