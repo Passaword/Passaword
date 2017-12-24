@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
@@ -25,7 +26,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Passaword.Constants\Passaword.Constants.csproj" />
     <ProjectReference Include="..\Passaword.Messaging\Passaword.Messaging.csproj" />
-    <ProjectReference Include="..\Passaword.Utils\Passaword.Utils.csproj" />
   </ItemGroup>
 
   <ItemGroup>
