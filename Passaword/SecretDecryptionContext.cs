@@ -109,6 +109,7 @@ namespace Passaword
             _decryptEventArgs.ValidationResult = result;
             if (!result.IsValid)
             {
+                _logger.LogDebug("Decryption pre processing invalid");
                 _context.OnPreValidationFailed?.Invoke(this, _decryptFailedEventArgs);
             }
             return result;
@@ -148,11 +149,13 @@ namespace Passaword
                 {
                     var decrypted = DecryptSecret();
                     await _secretStore.DeleteAsync(Secret.Id);
+                    _logger.LogDebug("Secret decrypted and deleted");
                     _context.OnSecretDecrypted?.Invoke(this, _decryptEventArgs);
                     return decrypted;
                 }
                 catch (Exception e)
                 {
+                    _logger.LogDebug("Decryption failed");
                     await IncrementFailedDecryptions();
 
                     _decryptFailedEventArgs.FailureReason = e.Message;
@@ -168,6 +171,7 @@ namespace Passaword
             }
             else
             {
+                _logger.LogDebug("Decryption invalid");
                 await IncrementFailedDecryptions();
                 _decryptFailedEventArgs.ValidationResult = result;
                 _decryptFailedEventArgs.FailureReason = "Validation failed";

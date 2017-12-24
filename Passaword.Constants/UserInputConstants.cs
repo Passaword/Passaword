@@ -8,8 +8,10 @@ namespace Passaword.Constants
         public const string Passphrase = "Passphrase";
         public const string Expiry = "Expiry";
         public const string EmailAddress = "Email";
+        public const string IpRegex = "Ip";
         public const string ForceAuthentication = "ForceAuthentication";
         public const string ExpiryDateFormat = "yyyyMMddHHmm";
         public const string DoNotSendEmail = "DoNotSendEmail";
+        public static string IpAddress = "Ip";
     }
 }

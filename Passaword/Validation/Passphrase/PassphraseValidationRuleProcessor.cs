@@ -40,9 +40,9 @@ namespace Passaword.Validation.Passphrase
             {
                 throw new ArgumentException("Passphrase is required");
             }
-            if (encryptionContext.GetInput(UserInputConstants.Passphrase) == null) return;
 
-            var passphrase = encryptionContext.GetInput(UserInputConstants.Passphrase);
+            var passphrase = encryptionContext.GetInput(UserInputConstants.Passphrase) ?? "";
+
             var passphraseData = new PassphraseValidationData
             {
                 Algorithm = PassphraseAlgorithm.Pbkdf2Sha1,
@@ -50,7 +50,7 @@ namespace Passaword.Validation.Passphrase
                 Salt = _keyGenerator.GenerateSalt()
             };
 
-            encryptionContext.EncryptionKey = GetEncryptionKey(passphrase, passphraseData);
+            if (!string.IsNullOrEmpty(passphrase)) encryptionContext.EncryptionKey = GetEncryptionKey(passphrase, passphraseData);
             _logger.LogDebug($"Using passphrase {passphrase} to set encryption key to {encryptionContext.EncryptionKey}");
             encryptionContext.AddValidationRule(new SecretValidationRule
             {

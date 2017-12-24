@@ -16,6 +16,7 @@ using Passaword.Validation;
 using Passaword.Validation.Expiry;
 using Passaword.Validation.Passphrase;
 using Passaword.Validation.UserEmail;
+using Passaword.Validation.UserIp;
 
 namespace Passaword.Configuration
 {
@@ -90,6 +91,23 @@ namespace Passaword.Configuration
 
             expiry.ValidationStage = Constants.ValidationStage.AfterGet;
             context.SecretValidationRuleProcessors.Add(expiry);
+            return pb;
+        }
+
+        public static IPassawordBuilder AddUserIpValidation(this IPassawordBuilder pb, Action<UserIpValidatorOptions> options = null)
+        {
+            pb.Services.AddTransient<UserIpValidationRuleProcessor, UserIpValidationRuleProcessor>();
+            var serviceProvider = pb.Services.BuildServiceProvider();
+            var userIp = serviceProvider.GetService<UserIpValidationRuleProcessor>();
+            var context = serviceProvider.GetService<PassawordContext>();
+
+            var o = new UserIpValidatorOptions();
+            options?.Invoke(o);
+
+            userIp.IsRequired = o.IsRequired;
+            userIp.ValidationStage = o.ValidationStage;
+            
+            context.SecretValidationRuleProcessors.Add(userIp);
             return pb;
         }
 

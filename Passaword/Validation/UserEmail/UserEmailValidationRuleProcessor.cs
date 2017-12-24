@@ -10,12 +10,10 @@ namespace Passaword.Validation.UserEmail
 {
     public class UserEmailValidationRuleProcessor : BaseValidationRuleProcessor
     {
-        private readonly IKeyGenerator _keyGenerator;
         private readonly ILogger<UserEmailValidationRuleProcessor> _logger;
 
-        public UserEmailValidationRuleProcessor(IKeyGenerator keyGenerator, ILogger<UserEmailValidationRuleProcessor> logger)
+        public UserEmailValidationRuleProcessor(ILogger<UserEmailValidationRuleProcessor> logger)
         {
-            _keyGenerator = keyGenerator;
             _logger = logger;
         }
 
@@ -52,6 +50,8 @@ namespace Passaword.Validation.UserEmail
             {
                 if (principal == null || !principal.Identity.IsAuthenticated)
                 {
+                    _logger.LogDebug($"User is not authorized");
+
                     return new ValidationResult(false)
                     {
                         Error = "User is not authenticated",
@@ -67,6 +67,7 @@ namespace Passaword.Validation.UserEmail
                 }
                 else
                 {
+                    _logger.LogDebug($"Authenticated user {userEmail} did not match {emailData.Email}");
                     return new ValidationResult(false)
                     {
                         Error = "Authenticated user does not match target user",

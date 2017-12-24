@@ -96,6 +96,7 @@ namespace Passaword
         {
             Secret.EncryptedText = _secretEncryptor.Encrypt(UnencryptedSecret, EncryptionKey);
             Secret.EncryptionType = EncryptorMapping.BackwardMapping[_secretEncryptor.GetType().AssemblyQualifiedName];
+            _logger.LogDebug($"Secret encrypted with {Secret.EncryptionType}");
         }
 
         public virtual async Task<String> EncryptSecretAsync()
