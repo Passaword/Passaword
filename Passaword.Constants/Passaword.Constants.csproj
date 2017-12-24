@@ -12,7 +12,7 @@
     <RepositoryUrl>https://github.com/Passaword/Passaword</RepositoryUrl>
     <PackageTags>core cryptography</PackageTags>
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/34607635?s=200&amp;v=4</PackageIconUrl>
-    <Version>1.0.8</Version>
+    <Version>0.0.1</Version>
   </PropertyGroup>
 
 </Project>
