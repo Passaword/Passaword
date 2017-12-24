@@ -22,7 +22,7 @@ namespace Passaword.Messaging.Email
         }
 
         public string Subject { get; set; }
-        public EmailConstants.TextFormats TextFormat { get; set; }
+        public EmailConstants.TextFormats TextFormat { get; set; } = EmailConstants.TextFormats.PlainText;
         public string Content { get; set; }
         public List<EmailAddress> From { get; set; } = new List<EmailAddress>();
         public List<EmailAddress> To { get; set; } = new List<EmailAddress>();

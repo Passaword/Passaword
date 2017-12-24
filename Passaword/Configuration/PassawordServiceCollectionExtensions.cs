@@ -147,13 +147,15 @@ namespace Passaword.Configuration
                 {
                     var emailService = e.ServiceProvider.GetService<IEmailMessageChannel>();
                     var url = config["Passaword:SecretUrl"].Replace("{key}", HttpUtility.UrlEncode(e.Context.Secret.Id));
+                    var custommessage = e.Context.GetInput(UserInputConstants.CustomMessage);
                     await emailService.SendAsync(
                         new EmailMessage(to: new EmailAddress(e.Context.GetInput(UserInputConstants.EmailAddress)))
                         {
                             Subject = config["Passaword:EmailConfiguration:EncryptSubject"],
                             Content = await emailService.FormatMessage(EmailConstants.MessageTypes.Encrypted, new Dictionary<string,string>
                             {
-                                { "url", url }
+                                { "url", url },
+                                { "custommessage", !string.IsNullOrEmpty(custommessage) ? custommessage + Environment.NewLine + Environment.NewLine : "" }
                             })
                         });
                 }

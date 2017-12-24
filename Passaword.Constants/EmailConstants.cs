@@ -12,8 +12,8 @@ namespace Passaword.Constants
 
         public enum TextFormats
         {
-            Html,
-            PlainText
+            PlainText,
+            Html
         }
 
         public class MessageTypes

@@ -12,6 +12,7 @@ namespace Passaword.Constants
         public const string ForceAuthentication = "ForceAuthentication";
         public const string ExpiryDateFormat = "yyyyMMddHHmm";
         public const string DoNotSendEmail = "DoNotSendEmail";
-        public static string IpAddress = "Ip";
+        public const string IpAddress = "Ip";
+        public const string CustomMessage = "CustomMessage";
     }
 }
