@@ -9,3 +9,6 @@ Passaword
    intro
    security
    getstarted
+   validation
+   extensibility
+   sql

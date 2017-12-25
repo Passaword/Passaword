@@ -23,7 +23,7 @@ Can someone intercept a secret?
 
 Yes - although unlikely, that's why you need to use a layered approach to make it as difficult as possible. It's recommended to always use a passphrase and supply that via a different channel.
 
-In the worst case where someone has devrypted your secret, you will know about it due to the self-destructing nature of Passaword secrets. You should reset that secret / password and resend it.
+In the worst case where someone has decrypted your secret, you will know about it due to the self-destructing nature of Passaword secrets. You should reset that secret / password and resend it.
 
 ==================
 Server Security
