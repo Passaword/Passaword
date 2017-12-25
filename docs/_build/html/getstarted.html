@@ -96,6 +96,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dependency-injection">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#encrypting-a-secret">Encrypting a secret</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#decrypting-a-secret">Decrypting a secret</a></li>
 </ul>
@@ -184,9 +185,20 @@
 </div>
 <p>This sets up all the services you need for a basic installation with expiry and passphrase validation.</p>
 </div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Ensure you add  your configuration defaults in <code class="docutils literal"><span class="pre">appsettings.json</span></code> (secure secrets in your secure User Secrets storage):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;Passaword&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;DefaultKey&quot;</span><span class="p">:</span> <span class="s2">&quot;25EC2A10DCFE73790A81D02388C000DACD4B6D4DD8603401EA0BF0CBA40DB1E6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SecretUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://passaword.mydomain.com/secret?k=</span><span class="si">{key}</span><span class="s2">&quot;</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Please generate your OWN key</strong></p>
+</div>
 <div class="section" id="encrypting-a-secret">
 <h2>Encrypting a secret<a class="headerlink" href="#encrypting-a-secret" title="Permalink to this headline">¶</a></h2>
-<p>To encrypt a secret, you need a <code class="docutils literal"><span class="pre">SecretEncryptionContext</span></code>, provided an <code class="docutils literal"><span class="pre">ISecretContextService</span></code>, which you can get via DI.</p>
+<p>To encrypt a secret, you need a <code class="docutils literal"><span class="pre">SecretEncryptionContext</span></code>, provided by an <code class="docutils literal"><span class="pre">ISecretContextService</span></code>, which you can get via DI.</p>
 <p>Within the encryption context, you should pass in any data the validators need, and then call the <code class="docutils literal"><span class="pre">EncryptSecretAsync</span></code> method:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>    <span class="n">string</span> <span class="n">secretId</span><span class="p">;</span>
 <span class="n">using</span> <span class="p">(</span><span class="n">var</span> <span class="n">encryptContext</span> <span class="o">=</span> <span class="n">_secretContextService</span><span class="o">.</span><span class="n">CreateEncryptionContext</span><span class="p">(</span><span class="n">User</span><span class="p">))</span>
@@ -205,7 +217,7 @@
 </div>
 <div class="section" id="decrypting-a-secret">
 <h2>Decrypting a secret<a class="headerlink" href="#decrypting-a-secret" title="Permalink to this headline">¶</a></h2>
-<p>Decrypting a secret is a 2-step process, a pre-process step to check the user supplied key, and then the actual decryption step. This is condensed in to one call for the simplicity:</p>
+<p>Decrypting a secret is a 2-step process, a pre-process step to check the user supplied key, and then the actual decryption step. This is condensed in to one call for brevity:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">using</span> <span class="p">(</span><span class="n">var</span> <span class="n">decryptContext</span> <span class="o">=</span> <span class="n">_secretContextService</span><span class="o">.</span><span class="n">CreateDecryptionContext</span><span class="p">(</span><span class="n">User</span><span class="p">))</span>
     <span class="p">{</span>
             <span class="n">decryptContext</span><span class="o">.</span><span class="n">InputData</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">UserInputConstants</span><span class="o">.</span><span class="n">Passphrase</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Passphrase</span><span class="p">);</span>

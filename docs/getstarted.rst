@@ -28,6 +28,19 @@ In your ``Startup.cs`` file, add the following line inside ``ConfigureServices``
 
 This sets up all the services you need for a basic installation with expiry and passphrase validation.
 
+===============
+Configuration
+===============
+
+Ensure you add  your configuration defaults in ``appsettings.json`` (secure secrets in your secure User Secrets storage)::
+
+    "Passaword": {
+	"DefaultKey": "25EC2A10DCFE73790A81D02388C000DACD4B6D4DD8603401EA0BF0CBA40DB1E6",
+	"SecretUrl": "https://passaword.mydomain.com/secret?k={key}"
+	}
+
+**Please generate your OWN key**
+
 ===============================
 Encrypting a secret
 ===============================
