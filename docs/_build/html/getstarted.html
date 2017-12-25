@@ -1,0 +1,303 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Getting Started &mdash; Passaword 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Passaword 0.0.1 documentation" href="index.html"/>
+        <link rel="prev" title="Security" href="security.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Passaword
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">What is Passaword?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependency-injection">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#encrypting-a-secret">Encrypting a secret</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#decrypting-a-secret">Decrypting a secret</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Passaword</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Getting Started</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/getstarted.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The package is available on NuGet:</p>
+<p><code class="docutils literal"><span class="pre">Install-Package</span> <span class="pre">Passaword</span></code></p>
+<p>If you want to run a web version of Passaword, a good place to start is the sample UI, available at <a class="reference external" href="https://github.com/Passaword/Passaword.UI">https://github.com/Passaword/Passaword.UI</a></p>
+<p>This gives you a really simple UI with Google authentication enabled.</p>
+</div>
+<div class="section" id="dependency-injection">
+<h2>Dependency Injection<a class="headerlink" href="#dependency-injection" title="Permalink to this headline">¶</a></h2>
+<p>The first step is to initialize the services Passaword needs according to your desired configuration.</p>
+<p>In your <code class="docutils literal"><span class="pre">Startup.cs</span></code> file, add the following line inside <code class="docutils literal"><span class="pre">ConfigureServices</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">services</span><span class="o">.</span><span class="n">AddPassaword</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">AddInMemorySecretStore</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">AddExpiryValidation</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">AddPassphraseValidation</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>This sets up all the services you need for a basic installation with expiry and passphrase validation.</p>
+</div>
+<div class="section" id="encrypting-a-secret">
+<h2>Encrypting a secret<a class="headerlink" href="#encrypting-a-secret" title="Permalink to this headline">¶</a></h2>
+<p>To encrypt a secret, you need a <code class="docutils literal"><span class="pre">SecretEncryptionContext</span></code>, provided an <code class="docutils literal"><span class="pre">ISecretContextService</span></code>, which you can get via DI.</p>
+<p>Within the encryption context, you should pass in any data the validators need, and then call the <code class="docutils literal"><span class="pre">EncryptSecretAsync</span></code> method:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>    <span class="n">string</span> <span class="n">secretId</span><span class="p">;</span>
+<span class="n">using</span> <span class="p">(</span><span class="n">var</span> <span class="n">encryptContext</span> <span class="o">=</span> <span class="n">_secretContextService</span><span class="o">.</span><span class="n">CreateEncryptionContext</span><span class="p">(</span><span class="n">User</span><span class="p">))</span>
+    <span class="p">{</span>
+            <span class="n">encryptContext</span><span class="o">.</span><span class="n">Secret</span><span class="o">.</span><span class="n">CreatedBy</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">FindFirstValue</span><span class="p">(</span><span class="n">ClaimTypes</span><span class="o">.</span><span class="n">Email</span><span class="p">);</span>
+            <span class="n">encryptContext</span><span class="o">.</span><span class="n">InputData</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">UserInputConstants</span><span class="o">.</span><span class="n">Secret</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Secret</span><span class="p">);</span>
+            <span class="n">encryptContext</span><span class="o">.</span><span class="n">InputData</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">UserInputConstants</span><span class="o">.</span><span class="n">Passphrase</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Passphrase</span><span class="p">);</span>
+            <span class="n">encryptContext</span><span class="o">.</span><span class="n">InputData</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">UserInputConstants</span><span class="o">.</span><span class="n">Expiry</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Expiry</span><span class="p">);</span>
+            <span class="n">encryptContext</span><span class="o">.</span><span class="n">SecretProperties</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">new</span> <span class="n">SecretProperty</span><span class="p">(</span><span class="n">SecretProperties</span><span class="o">.</span><span class="n">OwnerEmail</span><span class="p">)</span> <span class="p">{</span> <span class="n">Data</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">FindFirstValue</span><span class="p">(</span><span class="n">ClaimTypes</span><span class="o">.</span><span class="n">Email</span><span class="p">)</span> <span class="p">});</span>
+
+            <span class="n">secretId</span> <span class="o">=</span> <span class="k">await</span> <span class="n">encryptContext</span><span class="o">.</span><span class="n">EncryptSecretAsync</span><span class="p">();</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>That’s all. Remember to dispose of the context so your secret doesn’t hang around in memory.</p>
+</div>
+<div class="section" id="decrypting-a-secret">
+<h2>Decrypting a secret<a class="headerlink" href="#decrypting-a-secret" title="Permalink to this headline">¶</a></h2>
+<p>Decrypting a secret is a 2-step process, a pre-process step to check the user supplied key, and then the actual decryption step. This is condensed in to one call for the simplicity:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">using</span> <span class="p">(</span><span class="n">var</span> <span class="n">decryptContext</span> <span class="o">=</span> <span class="n">_secretContextService</span><span class="o">.</span><span class="n">CreateDecryptionContext</span><span class="p">(</span><span class="n">User</span><span class="p">))</span>
+    <span class="p">{</span>
+            <span class="n">decryptContext</span><span class="o">.</span><span class="n">InputData</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">UserInputConstants</span><span class="o">.</span><span class="n">Passphrase</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">Passphrase</span><span class="p">);</span>
+
+            <span class="n">var</span> <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">decryptContext</span><span class="o">.</span><span class="n">PreProcessAsync</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Id</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">IsValid</span><span class="p">)</span>
+            <span class="p">{</span>
+                    <span class="n">var</span> <span class="n">decrypted</span> <span class="o">=</span> <span class="k">await</span> <span class="n">decryptContext</span><span class="o">.</span><span class="n">DecryptSecretAsync</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Id</span><span class="p">);</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">decrypted</span> <span class="o">==</span> <span class="n">null</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">throw</span> <span class="n">new</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Decryption failed&quot;</span><span class="p">);</span>
+                    <span class="p">}</span>
+                    <span class="k">return</span> <span class="n">decrypted</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="n">throw</span> <span class="n">new</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Decryption failed&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>That’s it! You can now encrypt and decrypt a secret.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="security.html" class="btn btn-neutral" title="Security" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, TimCodes.NET.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
