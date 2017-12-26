@@ -1,6 +1,6 @@
 # Passaword
 
-Passaword is a package that helps you set up a one-time secret sharing platform. 
+Passaword is a package for .NET Core 2.0 that helps you set up a one-time secret sharing platform. 
 
 Its purpose is to allow people to securely transmit secret data, such as passwords, via insecure communication channels, and have that secret self-destruct on decryption.
 
