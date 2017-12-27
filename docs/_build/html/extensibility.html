@@ -95,9 +95,15 @@
 <li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getstarted.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validation.html">Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="messaging.html">Messaging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sql.html">Storing Secrets in SQL Server</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Extensibility</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Extensibility</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#storage">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#messaging">Messaging</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -163,7 +169,34 @@
             
   <div class="section" id="extensibility">
 <h1>Extensibility<a class="headerlink" href="#extensibility" title="Permalink to this headline">¶</a></h1>
-<p>Docs coming soon</p>
+<p>Passaword is highly configurable and can be overridden / replaced at various levels to achieve your desired business logic. If you don’t like how the default implementations work, write your own!</p>
+<p>In most cases, the default implementations will be named ‘Default’ plus the interface name. e.g. <code class="docutils literal"><span class="pre">DefaultSecretContextService</span></code>.</p>
+<div class="section" id="core">
+<h2>Core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">ISecretContextService</span></code> - sets up the encryption and decryption contexts</li>
+<li><code class="docutils literal"><span class="pre">SecretEncryptionContext</span></code> - orchestrates the full encryption process - it is possible to override most methods in this class</li>
+<li><code class="docutils literal"><span class="pre">SecretDecryptionContext</span></code> - orchestrates the full decryption process - it is possible to override most methods in this class</li>
+<li><code class="docutils literal"><span class="pre">IKeyGenerator</span></code> - generates keys, salts and returns the stored default key and decryption keys</li>
+<li><code class="docutils literal"><span class="pre">ISecretEncryptor</span></code> - encrypts a secret given a key and decrypts it given a list of keys - default implementation: <code class="docutils literal"><span class="pre">Aes256SecretEncryptor</span></code>. <strong>Please note</strong>: you should be careful to add any new implementations of this interface into <code class="docutils literal"><span class="pre">EncryptorMapping</span></code> on startup.</li>
+<li><code class="docutils literal"><span class="pre">ISecretValidationRuleProcessor</span></code> - executes custom validation logic against a stored secret when decrypting</li>
+<li><code class="docutils literal"><span class="pre">ISecretValidator</span></code> - orchestrates the validation logic within a decryption context</li>
+</ul>
+</div>
+<div class="section" id="storage">
+<h2>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">ISecretStore</span></code> - responsible for CRUD operations for secrets</li>
+</ul>
+</div>
+<div class="section" id="messaging">
+<h2>Messaging<a class="headerlink" href="#messaging" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">IMessageContentStore</span></code> - responsible for sourcing and formatting the message content. The <code class="docutils literal"><span class="pre">DefaultContentStore</span></code> does this using the appsettings.json file.</li>
+<li><code class="docutils literal"><span class="pre">IMessageChannel</span></code> - defines a messaging channel</li>
+<li><code class="docutils literal"><span class="pre">IMessage</span></code> - defines a message to send through an <code class="docutils literal"><span class="pre">IMessageChannel</span></code></li>
+</ul>
+</div>
 </div>
 
 

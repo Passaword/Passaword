@@ -9,6 +9,7 @@ Passaword
    security
    getstarted
    validation
+   events
    messaging
    sql
    extensibility

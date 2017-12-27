@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Security &mdash; Passaword 0.1.4 documentation</title>
+  <title>Events &mdash; Passaword 0.1.4 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Passaword 0.1.4 documentation" href="index.html"/>
-        <link rel="next" title="Getting Started" href="getstarted.html"/>
-        <link rel="prev" title="What is Passaword?" href="intro.html"/> 
+        <link rel="next" title="Messaging" href="messaging.html"/>
+        <link rel="prev" title="Validation" href="validation.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -93,15 +93,10 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">What is Passaword?</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Security</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#out-the-box">Out the box</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#can-someone-intercept-a-secret">Can someone intercept a secret?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#server-security">Server Security</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getstarted.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validation.html">Validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="messaging.html">Messaging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sql.html">Storing Secrets in SQL Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extensibility.html">Extensibility</a></li>
@@ -149,13 +144,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Security</li>
+      <li>Events</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/security.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/events.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -168,31 +163,45 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="security">
-<h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="out-the-box">
-<h2>Out the box<a class="headerlink" href="#out-the-box" title="Permalink to this headline">¶</a></h2>
-<p>The following security features are provided out the box:</p>
+  <div class="section" id="events">
+<h1>Events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h1>
+<p>Events are registered against the global <code class="docutils literal"><span class="pre">PassawordContext</span></code> for common actions.</p>
+<p>You can hook into these by getting a reference to the context in DI:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">public</span> <span class="n">MyClass</span><span class="p">(</span><span class="n">PassawordContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">OnSecretEncrypted</span> <span class="o">+=</span> <span class="p">(</span><span class="n">encryptionContext</span><span class="p">,</span> <span class="n">eventArgs</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Console</span><span class="o">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s2">&quot;Hey cool, your secret was encrypted!&quot;</span><span class="p">);</span>
+        <span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The events currently available are:</p>
 <ul class="simple">
-<li>Secrets are encrypted using AES 256</li>
-<li>Secrets can be set to expire after any amount of time</li>
-<li>Encryption key can be derived from a user supplied passphrase (key derivation by PBKDF2)</li>
-<li>Decryption can be restricted to users based on their logged-in email address</li>
-<li>Decryption can be restricted by IP</li>
-<li>Encryption key can be rotated</li>
+<li><code class="docutils literal"><span class="pre">OnSecretEncrypted</span></code></li>
+<li><code class="docutils literal"><span class="pre">OnSecretDecrypted</span></code></li>
+<li><code class="docutils literal"><span class="pre">OnPreValidationFailed</span></code></li>
+<li><code class="docutils literal"><span class="pre">OnDecryptionFailed</span></code></li>
 </ul>
-<p>The system is highly flexible and configurable, so you can define your own validation criteria or override the out of the box functionality.</p>
-<p>One example could be to delete a secret after X failed decryptions.</p>
-</div>
-<div class="section" id="can-someone-intercept-a-secret">
-<h2>Can someone intercept a secret?<a class="headerlink" href="#can-someone-intercept-a-secret" title="Permalink to this headline">¶</a></h2>
-<p>Yes - although unlikely, that’s why you need to use a layered approach to make it as difficult as possible. It’s recommended to always use a passphrase and supply that via a different channel.</p>
-<p>In the worst case where someone has decrypted your secret, you will know about it due to the self-destructing nature of Passaword secrets. You should reset that secret / password and resend it.</p>
-</div>
-<div class="section" id="server-security">
-<h2>Server Security<a class="headerlink" href="#server-security" title="Permalink to this headline">¶</a></h2>
-<p>It is out of scope for the package to secure your server. It is assumed the environment you install the package into is secure.</p>
-<p>If you are running a web server, that means ensuring you use TLS and secure headers.</p>
+<p>The email messaging system makes use of these to send emails. For example see the <code class="docutils literal"><span class="pre">AddEmailMessaging</span></code> source:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>    context.OnSecretEncrypted += async (ctx, e) =&gt;
+{
+    if (e.Context.GetInput(UserInputConstants.EmailAddress) != null &amp;&amp; !e.Context.GetInput&lt;bool&gt;(UserInputConstants.DoNotSendEmail))
+    {
+        var emailService = e.ServiceProvider.GetService&lt;IEmailMessageChannel&gt;();
+        var url = config[&quot;Passaword:SecretUrl&quot;].Replace(&quot;{key}&quot;, HttpUtility.UrlEncode(e.Context.Secret.Id));
+        var custommessage = e.Context.GetInput(UserInputConstants.CustomMessage);
+        await emailService.SendAsync(
+            new EmailMessage(to: new EmailAddress(e.Context.GetInput(UserInputConstants.EmailAddress)))
+            {
+                Subject = config[&quot;Passaword:EmailConfiguration:EncryptSubject&quot;],
+                Content = await emailService.FormatMessage(EmailConstants.MessageTypes.Encrypted, new Dictionary&lt;string,string&gt;
+                {
+                    { &quot;url&quot;, url },
+                    { &quot;custommessage&quot;, !string.IsNullOrEmpty(custommessage) ? custommessage + Environment.NewLine + Environment.NewLine : &quot;&quot; }
+                })
+            });
+    }
+};
+</pre></div>
 </div>
 </div>
 
@@ -206,10 +215,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="getstarted.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="messaging.html" class="btn btn-neutral float-right" title="Messaging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="intro.html" class="btn btn-neutral" title="What is Passaword?" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="validation.html" class="btn btn-neutral" title="Validation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
