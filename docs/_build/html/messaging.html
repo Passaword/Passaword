@@ -96,7 +96,12 @@
 <li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getstarted.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validation.html">Validation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Messaging</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Messaging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#initialization">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#on-encrypt">On Encrypt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#customisation">Customisation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="sql.html">Storing Secrets in SQL Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extensibility.html">Extensibility</a></li>
 </ul>
@@ -164,7 +169,61 @@
             
   <div class="section" id="messaging">
 <h1>Messaging<a class="headerlink" href="#messaging" title="Permalink to this headline">¶</a></h1>
-<p>Docs coming soon</p>
+<p>A simple messaging API is provided to allow configuration of different providers. Out the box, and email messaging channel is provided, utilising <code class="docutils literal"><span class="pre">MailKit</span></code>.</p>
+<p>This assumes you have an SMTP enabled mail server.</p>
+<p>By default, plain text emails are sent to a provided email address on encryption, and can be sent back to an owner email address on decryption.</p>
+<div class="section" id="initialization">
+<h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
+<p>Add this line to your <code class="docutils literal"><span class="pre">Startup.cs</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">.</span><span class="n">AddEmailMessaging</span><span class="p">(</span><span class="n">options</span> <span class="o">=&gt;</span>
+<span class="p">{</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">SendOwnerEmailOnDecrypt</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>Add the email settings to your appsettings.json config file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;Passaword&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;EmailConfiguration&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;EncryptSubject&quot;</span><span class="p">:</span> <span class="s2">&quot;You have been sent a secret&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;DecryptSubject&quot;</span><span class="p">:</span> <span class="s2">&quot;Your secret has been received&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;SmtpServer&quot;</span><span class="p">:</span> <span class="s2">&quot;smtp.example.com&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;SmtpPort&quot;</span><span class="p">:</span> <span class="mi">587</span><span class="p">,</span>
+          <span class="s2">&quot;SmtpUsername&quot;</span><span class="p">:</span> <span class="s2">&quot;myemail@example.com&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;SmtpPassword&quot;</span><span class="p">:</span> <span class="s2">&quot;mypassword&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;RequiresAuthentication&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+          <span class="s2">&quot;UseSsl&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+          <span class="s2">&quot;DefaultFromAddress&quot;</span><span class="p">:</span> <span class="s2">&quot;myemail@example.com&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;DefaultFromName&quot;</span><span class="p">:</span> <span class="s2">&quot;Passaword&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;Messaging&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;Content&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;Encrypted&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{custommessage}</span><span class="s2">You have been sent a secret. Use your passphrase to decrypt it (if you were given one) using the link below.</span><span class="se">\r\n\r\n</span><span class="si">{url}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Decrypted&quot;</span><span class="p">:</span> <span class="s2">&quot;The secret </span><span class="si">{secret}</span><span class="s2"> you sent has been received and destroyed&quot;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="on-encrypt">
+<h2>On Encrypt<a class="headerlink" href="#on-encrypt" title="Permalink to this headline">¶</a></h2>
+<p>When encrypting, pass the following data:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">encryptContext</span><span class="o">.</span><span class="n">InputData</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">UserInputConstants</span><span class="o">.</span><span class="n">CustomMessage</span><span class="p">,</span> <span class="n">customMessage</span><span class="p">);</span>
+<span class="n">encryptContext</span><span class="o">.</span><span class="n">InputData</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">UserInputConstants</span><span class="o">.</span><span class="n">EmailAddress</span><span class="p">,</span> <span class="n">targetEmail</span><span class="p">);</span>
+<span class="n">encryptContext</span><span class="o">.</span><span class="n">SecretProperties</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">new</span> <span class="n">SecretProperty</span><span class="p">(</span><span class="n">SecretProperties</span><span class="o">.</span><span class="n">OwnerEmail</span><span class="p">)</span> <span class="p">{</span> <span class="n">Data</span> <span class="o">=</span> <span class="n">ownerEmail</span> <span class="p">});</span>
+</pre></div>
+</div>
+<p>If you want to suppress the email on encrypt, you can pass in <code class="docutils literal"><span class="pre">encryptContext.InputData.Add(UserInputConstants.DoNotSendEmail,</span> <span class="pre">true);</span></code></p>
+</div>
+<div class="section" id="customisation">
+<h2>Customisation<a class="headerlink" href="#customisation" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to extend the messaging functionality with the following interfaces:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">IMessageContentStore</span></code> - responsible for sourcing and formatting the message content. The <code class="docutils literal"><span class="pre">DefaultContentStore</span></code> does this using the appsettings.json file.</li>
+<li><code class="docutils literal"><span class="pre">IMessageChannel</span></code> - defines a messaging channel</li>
+<li><code class="docutils literal"><span class="pre">IMessage</span></code> - defines a message to send through an <code class="docutils literal"><span class="pre">IMessageChannel</span></code></li>
+</ul>
+</div>
 </div>
 
 
