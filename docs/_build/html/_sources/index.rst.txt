@@ -1,6 +1,5 @@
 Passaword
 =====================================
-.. default-domain:: csharp
 
 .. toctree::
    :maxdepth: 2
