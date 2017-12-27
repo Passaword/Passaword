@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Validation &mdash; Passaword 0.0.1 documentation</title>
+  <title>Validation &mdash; Passaword 0.1.4 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Passaword 0.0.1 documentation" href="index.html"/>
-        <link rel="next" title="Extensibility" href="extensibility.html"/>
+    <link rel="top" title="Passaword 0.1.4 documentation" href="index.html"/>
+        <link rel="next" title="Messaging" href="messaging.html"/>
         <link rel="prev" title="Getting Started" href="getstarted.html"/> 
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.4
               </div>
             
           
@@ -95,9 +95,22 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html">What is Passaword?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getstarted.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extensibility.html">Extensibility</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#expiry">Expiry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-email">User Email</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-ip">User IP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#passphrase">Passphrase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#roll-your-own">Roll your own</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#encrypting">Encrypting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#decrypting">Decrypting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initialization">Initialization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="messaging.html">Messaging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sql.html">Storing Secrets in SQL Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensibility.html">Extensibility</a></li>
 </ul>
 
             
@@ -163,7 +176,125 @@
             
   <div class="section" id="validation">
 <h1>Validation<a class="headerlink" href="#validation" title="Permalink to this headline">¶</a></h1>
-<p>Docs coming soon</p>
+<p>Before a secret is decrpyted, it can be passed through a series of validation/verification criteria to make sure it is being decrypted by the right person.</p>
+<p>Validation can happen at different stages of decryption, once immediately after the secret is retrieved from the store and once immediately before it is decrypted.</p>
+<p>Out of the box, several validation criteria are available for your use:</p>
+<ul class="simple">
+<li>Expiry: Checks that the secret has not expired</li>
+<li>User Email: Checks that the logged in user’s email matches that which the secret was sent to</li>
+<li>User IP: Checks that the user’s IP matches a supplied regular expression</li>
+<li>Passphrase: Uses a user supplied passphrase to change the decryption key before decrypting</li>
+</ul>
+<p>Of course, if you are not happy with the default validation methods or want to add your own, you can bend the system to your will with the DI container.</p>
+<div class="section" id="expiry">
+<h2>Expiry<a class="headerlink" href="#expiry" title="Permalink to this headline">¶</a></h2>
+<p>Expiry validation ensures a secret cannot be decrypted after a certain date. By default this runs immediately after getting the secret from the store.</p>
+<p>Add the following to your Passaword initialization code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">services</span><span class="o">.</span><span class="n">AddPassaword</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">AddExpiryValidation</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Within the encryption context, ensure you add the expiry of the secret with a key of <code class="docutils literal"><span class="pre">UserInputConstants.Expiry</span></code>.</p>
+</div>
+<div class="section" id="user-email">
+<h2>User Email<a class="headerlink" href="#user-email" title="Permalink to this headline">¶</a></h2>
+<p>User email validation ensures a secret cannot be decrypted by a user other than the one who was sent the email. By default this runs immediately after getting the secret from the store.</p>
+<p>Add the following to your Passaword initialization code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">services</span><span class="o">.</span><span class="n">AddPassaword</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">AddUserEmailValidation</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Within the encryption context, ensure you add the email of the target user with a key of <code class="docutils literal"><span class="pre">UserInputConstants.EmailAddress</span></code> and set the following: <code class="docutils literal"><span class="pre">encryptContext.InputData.Add(UserInputConstants.ForceAuthentication,</span> <span class="pre">true)</span></code>.</p>
+</div>
+<div class="section" id="user-ip">
+<h2>User IP<a class="headerlink" href="#user-ip" title="Permalink to this headline">¶</a></h2>
+<p>User IP validation ensures a secret cannot be decrypted by a user who’s IP does not match a given regular expression. By default this runs immediately after getting the secret from the store.</p>
+<p>Add the following to your Passaword initialization code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">services</span><span class="o">.</span><span class="n">AddPassaword</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">AddUserIpValidation</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Within the encryption context, ensure you add the regex of the IP for a valid user with a key of <code class="docutils literal"><span class="pre">UserInputConstants.IpRegex</span></code>.</p>
+<p>Within the decryption context, ensure you add the IP address of the user with a key of <code class="docutils literal"><span class="pre">UserInputConstants.IpAddress</span></code>. There is an extension built in to Passaword.Utils to help with this: <code class="docutils literal"><span class="pre">Request.GetIpAddress()</span></code>.</p>
+</div>
+<div class="section" id="passphrase">
+<h2>Passphrase<a class="headerlink" href="#passphrase" title="Permalink to this headline">¶</a></h2>
+<p>Passphrase validation is not strictly a validator, but actually transforms the encryption key to one derived by PBKDF2 using a user-supplied passphrase. By default this runs immediately before decrypting the secret.</p>
+<p>Add the following to your Passaword initialization code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">services</span><span class="o">.</span><span class="n">AddPassaword</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">AddPassphraseValidation</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Within the encryption context, ensure you add the passphrase with a key of <code class="docutils literal"><span class="pre">UserInputConstants.Passphrase</span></code>.</p>
+<p>Within the decryption context, ensure you add the passphrase with a key of <code class="docutils literal"><span class="pre">UserInputConstants.Passphrase</span></code>. Clearly for this to be of any use, the passphrase in the decryption context should be supplied by the user attempting to decrypt the secret.</p>
+</div>
+<div class="section" id="roll-your-own">
+<h2>Roll your own<a class="headerlink" href="#roll-your-own" title="Permalink to this headline">¶</a></h2>
+<p>You can validate secrets however you like. How about validating that the user only decrypts at a very specific date and time?</p>
+<p>To roll your own validation, you need to implement <code class="docutils literal"><span class="pre">ISecretValidationRuleProcessor</span></code>. It may be easier to inherit from <code class="docutils literal"><span class="pre">BaseValidationRuleProcessor</span></code>.</p>
+<p>Firstly, override the <code class="docutils literal"><span class="pre">Name</span></code> property with the name of your validator. It should be unique among other validators you are using.</p>
+<p>There are 2 main methods to override:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>    <span class="n">public</span> <span class="n">override</span> <span class="n">void</span> <span class="n">CreateRule</span><span class="p">(</span><span class="n">SecretEncryptionContext</span> <span class="n">encryptionContext</span><span class="p">,</span> <span class="n">ClaimsPrincipal</span> <span class="n">principal</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">throw</span> <span class="n">new</span> <span class="n">NotImplementedException</span><span class="p">(</span><span class="s2">&quot;Rule setup not implemented&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">public</span> <span class="n">override</span> <span class="n">ValidationResult</span> <span class="n">Validate</span><span class="p">(</span><span class="n">SecretDecryptionContext</span> <span class="n">secret</span><span class="p">,</span> <span class="n">string</span> <span class="n">validationData</span><span class="p">,</span> <span class="n">ClaimsPrincipal</span> <span class="n">principal</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">throw</span> <span class="n">new</span> <span class="n">NotImplementedException</span><span class="p">(</span><span class="s2">&quot;Rule validation not implemented&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="encrypting">
+<h3>Encrypting<a class="headerlink" href="#encrypting" title="Permalink to this headline">¶</a></h3>
+<p>The first, <code class="docutils literal"><span class="pre">CreateRule</span></code> is the rule that is run when encrypting a secret. You should use this to store any information you need to run the validation later on. You can do this like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>    <span class="n">encryptionContext</span><span class="o">.</span><span class="n">AddValidationRule</span><span class="p">(</span><span class="n">new</span> <span class="n">SecretValidationRule</span>
+<span class="p">{</span>
+    <span class="n">Validator</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">Name</span><span class="p">,</span>
+    <span class="n">ValidationData</span> <span class="o">=</span> <span class="n">SerializeData</span><span class="p">(</span><span class="n">yourOwnDataObject</span><span class="p">)</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>FYI, <code class="docutils literal"><span class="pre">SerializeData</span></code> is a simple JSON serializer implemented in the base class. You can override this if necessary.</p>
+</div>
+<div class="section" id="decrypting">
+<h3>Decrypting<a class="headerlink" href="#decrypting" title="Permalink to this headline">¶</a></h3>
+<p>When it comes to decrypting your secret, you should deserialize your data and perform whatever checks necessary to return a ValidationResult.</p>
+<p>An example from the expiry validator is shown:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>    var expiryData = DeserializeData&lt;ExpiryValidationData&gt;(validationData);
+
+var isValid = !expiryData.Expiry.HasValue ||  DateTime.Now &lt; expiryData.Expiry;
+_logger.LogDebug($&quot;Validating expiry: {isValid}&quot;);
+if (isValid)
+{
+    return ValidationResult.SuccessResult;
+}
+else
+{
+    return new ValidationResult(false)
+    {
+        Error = &quot;Secret expired&quot;,
+        ValidationPointOfFailure = this.Name
+    };
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="initialization">
+<h3>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h3>
+<p>To get your validator into the workflow, you should add it to the global <code class="docutils literal"><span class="pre">PassawordContext</span></code>.</p>
+<p>Here’s how, in your <code class="docutils literal"><span class="pre">ConfigureServices</span></code> section (although it’s best practice to move this out into an extension method on top of <code class="docutils literal"><span class="pre">IPassawordBuilder</span></code>).:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">services</span><span class="o">.</span><span class="n">AddTransient</span><span class="o">&lt;</span><span class="n">MyValidationRuleProcessor</span><span class="p">,</span> <span class="n">MyValidationRuleProcessor</span><span class="o">&gt;</span><span class="p">();</span> <span class="o">//</span><span class="n">add</span> <span class="n">your</span> <span class="n">validator</span> <span class="n">to</span> <span class="n">DI</span>
+<span class="n">var</span> <span class="n">serviceProvider</span> <span class="o">=</span> <span class="n">services</span><span class="o">.</span><span class="n">BuildServiceProvider</span><span class="p">();</span> <span class="o">//</span><span class="n">build</span> <span class="n">the</span> <span class="n">service</span> <span class="n">provider</span>
+<span class="n">var</span> <span class="n">myValidator</span> <span class="o">=</span> <span class="n">serviceProvider</span><span class="o">.</span><span class="n">GetService</span><span class="o">&lt;</span><span class="n">MyValidationRuleProcessor</span><span class="o">&gt;</span><span class="p">();</span> <span class="o">//</span><span class="n">get</span> <span class="n">a</span> <span class="n">new</span> <span class="n">reference</span> <span class="n">to</span> <span class="n">your</span> <span class="n">validator</span>
+<span class="n">myValidator</span><span class="o">.</span><span class="n">ValidationStage</span> <span class="o">=</span> <span class="n">Constants</span><span class="o">.</span><span class="n">ValidationStage</span><span class="o">.</span><span class="n">AfterGet</span><span class="p">;</span> <span class="o">//</span> <span class="nb">set</span> <span class="n">up</span> <span class="n">the</span> <span class="n">pipeline</span>
+<span class="n">var</span> <span class="n">context</span> <span class="o">=</span> <span class="n">serviceProvider</span><span class="o">.</span><span class="n">GetService</span><span class="o">&lt;</span><span class="n">PassawordContext</span><span class="o">&gt;</span><span class="p">();</span> <span class="o">//</span><span class="n">get</span> <span class="n">the</span> <span class="k">global</span> <span class="n">Passaword</span> <span class="n">Context</span>
+
+<span class="n">context</span><span class="o">.</span><span class="n">SecretValidationRuleProcessors</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">myValidator</span><span class="p">);</span> <span class="o">//</span><span class="n">add</span> <span class="n">the</span> <span class="n">validator</span> <span class="n">to</span> <span class="n">the</span> <span class="nb">list</span>
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 
 
@@ -176,7 +307,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="extensibility.html" class="btn btn-neutral float-right" title="Extensibility" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="messaging.html" class="btn btn-neutral float-right" title="Messaging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="getstarted.html" class="btn btn-neutral" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -210,7 +341,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1',
+            VERSION:'0.1.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

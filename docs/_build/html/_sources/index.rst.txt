@@ -1,6 +1,6 @@
 Passaword
 =====================================
-
+.. default-domain:: csharp
 
 .. toctree::
    :maxdepth: 2
@@ -10,5 +10,6 @@ Passaword
    security
    getstarted
    validation
-   extensibility
+   messaging
    sql
+   extensibility

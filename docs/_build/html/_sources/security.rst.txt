@@ -12,6 +12,7 @@ The following security features are provided out the box:
 * Encryption key can be derived from a user supplied passphrase (key derivation by PBKDF2)
 * Decryption can be restricted to users based on their logged-in email address
 * Decryption can be restricted by IP
+* Encryption key can be rotated
 
 The system is highly flexible and configurable, so you can define your own validation criteria or override the out of the box functionality.
 

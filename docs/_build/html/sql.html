@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Storing Secrets in SQL Server &mdash; Passaword 0.0.1 documentation</title>
+  <title>Storing Secrets in SQL Server &mdash; Passaword 0.1.4 documentation</title>
   
 
   
@@ -35,8 +35,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Passaword 0.0.1 documentation" href="index.html"/>
-        <link rel="prev" title="Extensibility" href="extensibility.html"/> 
+    <link rel="top" title="Passaword 0.1.4 documentation" href="index.html"/>
+        <link rel="next" title="Extensibility" href="extensibility.html"/>
+        <link rel="prev" title="Messaging" href="messaging.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -65,7 +66,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.4
               </div>
             
           
@@ -95,8 +96,15 @@
 <li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getstarted.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validation.html">Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="messaging.html">Messaging</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Storing Secrets in SQL Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install-passaword-storage-sql-package">Install Passaword.Storage.Sql Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-the-connection-string">Add the connection string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-the-dependency">Add the dependency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#initialize-database">Initialize database</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="extensibility.html">Extensibility</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Storing Secrets in SQL Server</a></li>
 </ul>
 
             
@@ -162,7 +170,38 @@
             
   <div class="section" id="storing-secrets-in-sql-server">
 <h1>Storing Secrets in SQL Server<a class="headerlink" href="#storing-secrets-in-sql-server" title="Permalink to this headline">¶</a></h1>
-<p>Docs coming soon</p>
+<p>In a real world implementation, you probably want to store your secrets in a persistent store. This could be anything from a simple file based implementation to a Redis cache, MongoDB or whatever, as long as it implements <code class="docutils literal"><span class="pre">ISecretStore</span></code>.</p>
+<p>A default SQL Server storage provider is avaiable for your use, follow these steps to set it up:</p>
+<div class="section" id="install-passaword-storage-sql-package">
+<h2>Install Passaword.Storage.Sql Package<a class="headerlink" href="#install-passaword-storage-sql-package" title="Permalink to this headline">¶</a></h2>
+<p>Install the required package.</p>
+<p><code class="docutils literal"><span class="pre">Install-Package</span> <span class="pre">Passaword.Storage.Sql</span></code></p>
+</div>
+<div class="section" id="add-the-connection-string">
+<h2>Add the connection string<a class="headerlink" href="#add-the-connection-string" title="Permalink to this headline">¶</a></h2>
+<p>Add the connection string to your appsettings.json file.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;ConnectionStrings&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Passaword&quot;</span><span class="p">:</span> <span class="s2">&quot;Data Source=.</span><span class="se">\\</span><span class="s2">SQLEXPRESS;Initial Catalog=Passaword;Integrated Security=True&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="add-the-dependency">
+<h2>Add the dependency<a class="headerlink" href="#add-the-dependency" title="Permalink to this headline">¶</a></h2>
+<p>In <code class="docutils literal"><span class="pre">Startup.cs</span></code> replace <code class="docutils literal"><span class="pre">AddInMemorySecretStore</span></code> with <code class="docutils literal"><span class="pre">AddSqlSecretStore</span></code> and add <code class="docutils literal"><span class="pre">using</span> <span class="pre">Passaword.Storage.Sql;</span></code></p>
+</div>
+<div class="section" id="initialize-database">
+<h2>Initialize database<a class="headerlink" href="#initialize-database" title="Permalink to this headline">¶</a></h2>
+<p>Migrations are included with each build of the package. To ensure your database is always up to date, you can include the call to <code class="docutils literal"><span class="pre">Migrate</span></code> in the <code class="docutils literal"><span class="pre">Startup.cs</span></code> <code class="docutils literal"><span class="pre">ConfigureServices</span></code> call:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>    <span class="n">var</span> <span class="n">sp</span> <span class="o">=</span> <span class="n">services</span><span class="o">.</span><span class="n">BuildServiceProvider</span><span class="p">();</span>
+<span class="n">using</span> <span class="p">(</span><span class="n">var</span> <span class="n">db</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">GetService</span><span class="o">&lt;</span><span class="n">PassawordDbContext</span><span class="o">&gt;</span><span class="p">())</span>
+<span class="p">{</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">Database</span><span class="o">.</span><span class="n">Migrate</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Alternatively you can use the <code class="docutils literal"><span class="pre">update-database</span></code> command in the Package Manager Console. Read more: <a class="reference external" href="https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/">https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/</a></p>
+</div>
 </div>
 
 
@@ -175,8 +214,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="extensibility.html" class="btn btn-neutral float-right" title="Extensibility" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="extensibility.html" class="btn btn-neutral" title="Extensibility" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="messaging.html" class="btn btn-neutral" title="Messaging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -207,7 +248,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1',
+            VERSION:'0.1.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -36,10 +36,17 @@ Ensure you add  your configuration defaults in ``appsettings.json`` (secure secr
 
     "Passaword": {
 	"DefaultKey": "25EC2A10DCFE73790A81D02388C000DACD4B6D4DD8603401EA0BF0CBA40DB1E6",
+	"DecryptionKeys": [],
 	"SecretUrl": "https://passaword.mydomain.com/secret?k={key}"
 	}
 
 **Please generate your OWN key**
+
+---------------------
+Key rotation
+---------------------
+
+The decryption keys array is there so you can rotate the default key. Whenever you set a new encryption key, add the old one to the array.
 
 ===============================
 Encrypting a secret

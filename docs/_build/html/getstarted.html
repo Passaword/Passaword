@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Getting Started &mdash; Passaword 0.0.1 documentation</title>
+  <title>Getting Started &mdash; Passaword 0.1.4 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Passaword 0.0.1 documentation" href="index.html"/>
+    <link rel="top" title="Passaword 0.1.4 documentation" href="index.html"/>
         <link rel="next" title="Validation" href="validation.html"/>
         <link rel="prev" title="Security" href="security.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.4
               </div>
             
           
@@ -97,14 +97,18 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dependency-injection">Dependency Injection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#key-rotation">Key rotation</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#encrypting-a-secret">Encrypting a secret</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#decrypting-a-secret">Decrypting a secret</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="validation.html">Validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extensibility.html">Extensibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="messaging.html">Messaging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sql.html">Storing Secrets in SQL Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensibility.html">Extensibility</a></li>
 </ul>
 
             
@@ -194,11 +198,16 @@
 <p>Ensure you add  your configuration defaults in <code class="docutils literal"><span class="pre">appsettings.json</span></code> (secure secrets in your secure User Secrets storage):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;Passaword&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">&quot;DefaultKey&quot;</span><span class="p">:</span> <span class="s2">&quot;25EC2A10DCFE73790A81D02388C000DACD4B6D4DD8603401EA0BF0CBA40DB1E6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DecryptionKeys&quot;</span><span class="p">:</span> <span class="p">[],</span>
     <span class="s2">&quot;SecretUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://passaword.mydomain.com/secret?k=</span><span class="si">{key}</span><span class="s2">&quot;</span>
     <span class="p">}</span>
 </pre></div>
 </div>
 <p><strong>Please generate your OWN key</strong></p>
+<div class="section" id="key-rotation">
+<h3>Key rotation<a class="headerlink" href="#key-rotation" title="Permalink to this headline">¶</a></h3>
+<p>The decryption keys array is there so you can rotate the default key. Whenever you set a new encryption key, add the old one to the array.</p>
+</div>
 </div>
 <div class="section" id="encrypting-a-secret">
 <h2>Encrypting a secret<a class="headerlink" href="#encrypting-a-secret" title="Permalink to this headline">¶</a></h2>
@@ -290,7 +299,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1',
+            VERSION:'0.1.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

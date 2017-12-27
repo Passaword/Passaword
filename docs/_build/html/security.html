@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Security &mdash; Passaword 0.0.1 documentation</title>
+  <title>Security &mdash; Passaword 0.1.4 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Passaword 0.0.1 documentation" href="index.html"/>
+    <link rel="top" title="Passaword 0.1.4 documentation" href="index.html"/>
         <link rel="next" title="Getting Started" href="getstarted.html"/>
         <link rel="prev" title="What is Passaword?" href="intro.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.4
               </div>
             
           
@@ -101,8 +101,9 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="getstarted.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validation.html">Validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extensibility.html">Extensibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="messaging.html">Messaging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sql.html">Storing Secrets in SQL Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensibility.html">Extensibility</a></li>
 </ul>
 
             
@@ -177,6 +178,7 @@
 <li>Encryption key can be derived from a user supplied passphrase (key derivation by PBKDF2)</li>
 <li>Decryption can be restricted to users based on their logged-in email address</li>
 <li>Decryption can be restricted by IP</li>
+<li>Encryption key can be rotated</li>
 </ul>
 <p>The system is highly flexible and configurable, so you can define your own validation criteria or override the out of the box functionality.</p>
 <p>One example could be to delete a secret after X failed decryptions.</p>
@@ -237,7 +239,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1',
+            VERSION:'0.1.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
