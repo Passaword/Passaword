@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -50,42 +51,54 @@ namespace Passaword.Encryption
             }
         }
 
-        public string Decrypt(string encryptedSecret, string key)
+        public string Decrypt(string encryptedSecret, IList<string> keys)
         {
             var fullCipher = Convert.FromBase64String(encryptedSecret);
-            _logger.LogDebug($"Attempting to decrypt secret {encryptedSecret} with key {key}");
-            var iv = new byte[16];
-            var cipher = new byte[fullCipher.Length - iv.Length];
 
-            Buffer.BlockCopy(fullCipher, 0, iv, 0, iv.Length);
-            Buffer.BlockCopy(fullCipher, iv.Length, cipher, 0, fullCipher.Length - iv.Length);
-            var keyBytes = key.FromHex();
-
-            using (var aes = Aes.Create())
+            foreach (var key in keys)
             {
-                aes.KeySize = 256;
-                aes.BlockSize = 128;
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.PKCS7;
-                aes.Key = keyBytes;
-                aes.IV = iv;
-
-                using (ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+                try
                 {
-                    using (MemoryStream msDecrypt = new MemoryStream(cipher))
+                    _logger.LogDebug($"Attempting to decrypt secret {encryptedSecret} with key {key}");
+                    var iv = new byte[16];
+                    var cipher = new byte[fullCipher.Length - iv.Length];
+
+                    Buffer.BlockCopy(fullCipher, 0, iv, 0, iv.Length);
+                    Buffer.BlockCopy(fullCipher, iv.Length, cipher, 0, fullCipher.Length - iv.Length);
+                    var keyBytes = key.FromHex();
+
+                    using (var aes = Aes.Create())
                     {
-                        using (CryptoStream csDecrypt = new CryptoStream(msDecrypt
-                            , decryptor, CryptoStreamMode.Read))
+                        aes.KeySize = 256;
+                        aes.BlockSize = 128;
+                        aes.Mode = CipherMode.CBC;
+                        aes.Padding = PaddingMode.PKCS7;
+                        aes.Key = keyBytes;
+                        aes.IV = iv;
+
+                        using (ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
                         {
-                            using (StreamReader srDecrypt = new StreamReader(
-                                csDecrypt))
+                            using (MemoryStream msDecrypt = new MemoryStream(cipher))
                             {
-                                return srDecrypt.ReadToEnd();
+                                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt
+                                    , decryptor, CryptoStreamMode.Read))
+                                {
+                                    using (StreamReader srDecrypt = new StreamReader(
+                                        csDecrypt))
+                                    {
+                                        return srDecrypt.ReadToEnd();
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                catch
+                {
+                    //continue
+                }
             }
+            throw new CryptographicException("Unable to decrypt secret");
         }
     }
 }

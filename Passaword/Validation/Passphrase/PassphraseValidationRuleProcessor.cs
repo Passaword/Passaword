@@ -69,7 +69,8 @@ namespace Passaword.Validation.Passphrase
             {
                 case PassphraseAlgorithm.Pbkdf2Sha1:
                 default:
-                    decryptionContext.EncryptionKey = GetEncryptionKey(userSuppliedPassphrase, passphraseData);
+                    decryptionContext.DecryptionKeys.Clear();
+                    decryptionContext.DecryptionKeys.Add(GetEncryptionKey(userSuppliedPassphrase, passphraseData));
                     _logger.LogDebug($"Using passphrase {userSuppliedPassphrase} to set encryption key to {decryptionContext.EncryptionKey}");
                     return ValidationResult.SuccessResult;
             }

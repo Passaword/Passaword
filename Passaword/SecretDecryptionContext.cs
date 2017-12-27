@@ -23,7 +23,7 @@ namespace Passaword
         private readonly DecryptionEventArgs _decryptEventArgs;
         private readonly DecryptionFailedEventArgs _decryptFailedEventArgs;
         private readonly ILogger<SecretDecryptionContext> _logger;
-
+        
         public SecretDecryptionContext(
             IKeyGenerator keyGenerator,
             ISecretStore secretStore,
@@ -47,10 +47,12 @@ namespace Passaword
             _decryptEventArgs.Context = this;
             _decryptFailedEventArgs.Context = this;
             EncryptionKey = keyGenerator.GetDefaultEncryptionKey();
+            DecryptionKeys = keyGenerator.GetDecryptionKeys();
         }
 
         public Secret Secret { get; set; }
         public string EncryptionKey { get; set; }
+        public IList<string> DecryptionKeys { get; set; }
         public ClaimsPrincipal Principal { get; set; }
         public IDictionary<string, object> InputData { get; set; } = new Dictionary<string, object>();
 
@@ -91,8 +93,8 @@ namespace Passaword
             if (decryptorType == null) throw new Exception($"Could not find encryptor type {Secret.EncryptionType}");
             var decryptor = _serviceProvider.GetService(decryptorType) as ISecretEncryptor;
             if (decryptor == null) throw new Exception($"Encryption type {Secret.EncryptionType} does not inherit from ISecretEncryptor");
-
-            return _secretEncryptor.Decrypt(Secret.EncryptedText, EncryptionKey);
+            
+            return _secretEncryptor.Decrypt(Secret.EncryptedText, DecryptionKeys);
         }
 
         public virtual ValidationResult ValidateSecret(ValidationStage stage)
@@ -184,6 +186,8 @@ namespace Passaword
         {
             InputData = null;
             EncryptionKey = null;
+            DecryptionKeys?.Clear();
+            DecryptionKeys = null;
             Secret = null;
         }
     }

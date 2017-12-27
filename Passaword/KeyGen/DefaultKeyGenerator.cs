@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,20 @@ namespace Passaword.KeyGen
         public string GetDefaultEncryptionKey()
         {
             return _config["Passaword:DefaultKey"];
+        }
+
+        public IList<string> GetDecryptionKeys()
+        {
+            var keys = new List<string>();
+            var decryptKeys = _config.GetSection("Passaword:DecryptionKeys");
+
+            keys.Add(_config["Passaword:DefaultKey"]);
+            if (decryptKeys.Exists())
+            {
+                keys.AddRange(decryptKeys.Get<string[]>());
+            }
+
+            return keys;
         }
 
         public string GenerateKey(int length = 8, string allowableChars = AllowableCharacters)
