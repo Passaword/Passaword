@@ -13,7 +13,7 @@ Core
 * ``SecretEncryptionContext`` - orchestrates the full encryption process - it is possible to override most methods in this class
 * ``SecretDecryptionContext`` - orchestrates the full decryption process - it is possible to override most methods in this class
 * ``IKeyGenerator`` - generates keys, salts and returns the stored default key and decryption keys
-* ``ISecretEncryptor`` - encrypts a secret given a key and decrypts it given a list of keys - default implementation: ``Aes256SecretEncryptor``. **Please note**: you should be careful to add any new implementations of this interface into ``EncryptorMapping`` on startup.
+* ``ISecretEncryptor`` - encrypts a secret given a key and decrypts it given a list of keys - default implementation: ``Aes256SecretEncryptor``. **Please note**: you should be careful to add any new implementations of this interface into ``EncryptorMapping`` on startup, which is responsible for retrieving the correct class from a string stored against each secret.
 * ``ISecretValidationRuleProcessor`` - executes custom validation logic against a stored secret when decrypting
 * ``ISecretValidator`` - orchestrates the validation logic within a decryption context
 
