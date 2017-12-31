@@ -45,7 +45,7 @@ namespace Passaword.Storage
                 return Task.FromResult(_store[id]);
             }
             _logger.LogDebug($"Could not find secret with id {id}");
-            return null;
+            return Task.FromResult<Secret>(null);
         }
 
         public Task UpdateAsync(Secret secret)
