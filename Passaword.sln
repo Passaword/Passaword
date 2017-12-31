@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passaword.Storage.Sql", "Pa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passaword.Tests.Console", "Tests\Passaword.Tests.Console\Passaword.Tests.Console.csproj", "{D199B7B0-475C-4960-8E4D-E4CFB96C67A2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passaword.Tests", "Tests\Passaword.Tests\Passaword.Tests.csproj", "{053AB930-1275-49BD-97CE-59C87B455E12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,12 +43,17 @@ Global
 		{D199B7B0-475C-4960-8E4D-E4CFB96C67A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D199B7B0-475C-4960-8E4D-E4CFB96C67A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D199B7B0-475C-4960-8E4D-E4CFB96C67A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{053AB930-1275-49BD-97CE-59C87B455E12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{053AB930-1275-49BD-97CE-59C87B455E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{053AB930-1275-49BD-97CE-59C87B455E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{053AB930-1275-49BD-97CE-59C87B455E12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D199B7B0-475C-4960-8E4D-E4CFB96C67A2} = {04B27F5E-0FBA-43FC-9D2C-59755DD4C548}
+		{053AB930-1275-49BD-97CE-59C87B455E12} = {04B27F5E-0FBA-43FC-9D2C-59755DD4C548}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85362A8C-6CD2-434D-B1C4-8B847B136E66}
