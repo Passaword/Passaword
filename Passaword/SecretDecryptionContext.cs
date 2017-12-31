@@ -94,7 +94,7 @@ namespace Passaword
             var decryptor = _serviceProvider.GetService(decryptorType) as ISecretEncryptor;
             if (decryptor == null) throw new Exception($"Encryption type {Secret.EncryptionType} does not inherit from ISecretEncryptor");
             
-            return _secretEncryptor.Decrypt(Secret.EncryptedText, DecryptionKeys);
+            return decryptor.Decrypt(Secret.EncryptedText, DecryptionKeys);
         }
 
         public virtual ValidationResult ValidateSecret(ValidationStage stage)
