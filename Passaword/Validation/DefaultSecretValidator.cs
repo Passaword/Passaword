@@ -39,7 +39,7 @@ namespace Passaword.Validation
             var validator = _context.SecretValidationRuleProcessors.FirstOrDefault(q => q.Name == rule.Validator);
             if (validator == null) throw new Exception($"Validation rule type {rule.Validator} not registered");
 
-            if (validator.ValidationStage != stage)
+            if (stage == ValidationStage.AfterGet && validator.ValidationStage != stage)
                 return ValidationResult.SuccessResult;
 
             return validator.Validate(_secretContext, rule.ValidationData, _principal);
