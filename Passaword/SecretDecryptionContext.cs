@@ -105,10 +105,23 @@ namespace Passaword
         public virtual async Task<ValidationResult> PreProcessAsync(string id)
         {
             var secret = await _secretStore.GetAsync(id);
-            Secret = secret ?? throw new KeyNotFoundException("Invalid secret ID");
+            if (secret == null)
+            {
+                var notFoundResult = new ValidationResult(false)
+                {
+                    Error = "Invalid ID",
+                    ValidationPointOfFailure = "PreProcess"
+                };
+                _decryptFailedEventArgs.ValidationResult = notFoundResult;
+                _logger.LogDebug("Decryption pre processing invalid");
+                _context.OnPreValidationFailed?.Invoke(this, _decryptFailedEventArgs);
+                return notFoundResult;
+
+            }
+            Secret = secret;
 
             ValidationResult result = ValidateSecret(ValidationStage.AfterGet);
-            _decryptEventArgs.ValidationResult = result;
+            _decryptFailedEventArgs.ValidationResult = result;
             if (!result.IsValid)
             {
                 _logger.LogDebug("Decryption pre processing invalid");
