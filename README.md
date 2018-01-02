@@ -11,3 +11,5 @@ The difficulty with this kind of service online is often that you can't trust th
 ``Install-Package Passaword``
 
 Get started: https://passaword.readthedocs.io
+
+See a live demo (Google account required): https://passaword.azurewebsites.net - not for production secrets, no warranties
