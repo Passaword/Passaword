@@ -4,25 +4,25 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
-using Passaword.Utils;
+using Passaword.Encryption.Utils;
 
 namespace Passaword.Encryption
 {
-    public class Aes256SecretEncryptor : ISecretEncryptor
+    public class Aes256Encryptor : ISymmetricEncryptor
     {
-        private readonly ILogger<Aes256SecretEncryptor> _logger;
+        private readonly ILogger<Aes256Encryptor> _logger;
 
         public static string Name = "Aes256";
 
-        public Aes256SecretEncryptor(ILogger<Aes256SecretEncryptor> logger)
+        public Aes256Encryptor(ILogger<Aes256Encryptor> logger)
         {
             _logger = logger;
         }
 
-        public string Encrypt(string secret, string key)
+        public string Encrypt(string plainText, string key)
         {
             var keyBytes = key.FromHex();
-            _logger.LogDebug($"Attempting to encrypt secret {secret} with key {key}");
+            _logger.LogDebug($"Attempting to encrypt {plainText} with key {key}");
             using (var aes = Aes.Create())
             {
                 aes.KeySize = 256;
@@ -42,13 +42,18 @@ namespace Passaword.Encryption
                             using (StreamWriter swEncrypt = new StreamWriter(
                                 csEncrypt))
                             {
-                                swEncrypt.Write(secret);
+                                swEncrypt.Write(plainText);
                             }
                             return Convert.ToBase64String(aes.IV.Concat(msEncrypt.ToArray()).ToArray());
                         }
                     }
                 }
             }
+        }
+
+        public string Decrypt(string encryptedSecret, string key)
+        {
+            return Decrypt(encryptedSecret, new List<string> { key });
         }
 
         public string Decrypt(string encryptedSecret, IList<string> keys)
@@ -59,7 +64,7 @@ namespace Passaword.Encryption
             {
                 try
                 {
-                    _logger.LogDebug($"Attempting to decrypt secret {encryptedSecret} with key {key}");
+                    _logger.LogDebug($"Attempting to decrypt {encryptedSecret} with key {key}");
                     var iv = new byte[16];
                     var cipher = new byte[fullCipher.Length - iv.Length];
 
@@ -98,7 +103,7 @@ namespace Passaword.Encryption
                     //continue
                 }
             }
-            throw new CryptographicException("Unable to decrypt secret");
+            throw new CryptographicException("Unable to decrypt");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace Passaword.KeyGen
+namespace Passaword.Encryption.KeyGen
 {
     public interface IKeyGenerator
     {
@@ -8,5 +9,6 @@ namespace Passaword.KeyGen
         string GenerateSalt(int length = 16);
         string GetDefaultEncryptionKey();
         IList<string> GetDecryptionKeys();
+        string DeriveKey(string passphrase, byte[] salt, int iterationCount = 10000, KeyDerivationPrf prf = KeyDerivationPrf.HMACSHA256, int numBytes = 32);
     }
 }

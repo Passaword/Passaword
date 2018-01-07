@@ -48,7 +48,7 @@ namespace Passaword.Tests.SecretEncryptionContext
                 await context.EncryptSecretAsync();
 
                 var decryptorType = Type.GetType(EncryptorMapping.ForwardMapping[context.Secret.EncryptionType]);
-                var decryptor = _ctx.ServiceProvider.GetService(decryptorType) as ISecretEncryptor;
+                var decryptor = _ctx.ServiceProvider.GetService(decryptorType) as ISymmetricEncryptor;
 
                 Assert.Throws<CryptographicException>(()=>
                 {
@@ -69,7 +69,7 @@ namespace Passaword.Tests.SecretEncryptionContext
                 await context.EncryptSecretAsync();
 
                 var decryptorType = Type.GetType(EncryptorMapping.ForwardMapping[context.Secret.EncryptionType]);
-                var decryptor = _ctx.ServiceProvider.GetService(decryptorType) as ISecretEncryptor;
+                var decryptor = _ctx.ServiceProvider.GetService(decryptorType) as ISymmetricEncryptor;
 
                 Assert.Equal("test", decryptor?.Decrypt(context.Secret.EncryptedText, new List<string> { context.EncryptionKey }));
             }

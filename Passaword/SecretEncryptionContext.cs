@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Passaword.Constants;
 using Passaword.Encryption;
+using Passaword.Encryption.KeyGen;
 using Passaword.Events;
-using Passaword.KeyGen;
 using Passaword.Storage;
 using Passaword.Validation;
 
@@ -14,7 +14,7 @@ namespace Passaword
 {
     public class SecretEncryptionContext : IDisposable
     {
-        private readonly ISecretEncryptor _secretEncryptor;
+        private readonly ISymmetricEncryptor _secretEncryptor;
         private readonly ISecretStore _secretStore;
         private readonly PassawordContext _context;
         private readonly EncryptionEventArgs _eventArgs;
@@ -22,7 +22,7 @@ namespace Passaword
 
         public SecretEncryptionContext(
             IKeyGenerator keyGenerator, 
-            ISecretEncryptor secretEncryptor,
+            ISymmetricEncryptor secretEncryptor,
             ISecretStore secretStore,
             PassawordContext context,
             EncryptionEventArgs eventArgs,

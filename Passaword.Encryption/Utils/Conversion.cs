@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Passaword.Utils
+namespace Passaword.Encryption.Utils
 {
     public static class Conversion
     {

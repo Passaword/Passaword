@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Passaword.Constants;
 using Passaword.Encryption;
+using Passaword.Encryption.KeyGen;
 using Passaword.Events;
-using Passaword.KeyGen;
 using Passaword.Storage;
 using Passaword.Validation;
 
@@ -16,7 +16,7 @@ namespace Passaword
     public class SecretDecryptionContext : IDisposable
     {
         private readonly ISecretStore _secretStore;
-        private readonly ISecretEncryptor _secretEncryptor;
+        private readonly ISymmetricEncryptor _secretEncryptor;
         private readonly ISecretValidator _secretValidator;
         private readonly IServiceProvider _serviceProvider;
         private readonly PassawordContext _context;
@@ -27,7 +27,7 @@ namespace Passaword
         public SecretDecryptionContext(
             IKeyGenerator keyGenerator,
             ISecretStore secretStore,
-            ISecretEncryptor secretEncryptor,
+            ISymmetricEncryptor secretEncryptor,
             ISecretValidator secretValidator,
             IServiceProvider serviceProvider,
             PassawordContext context,
@@ -91,7 +91,7 @@ namespace Passaword
             }
             var decryptorType = Type.GetType(EncryptorMapping.ForwardMapping[Secret.EncryptionType]);
             if (decryptorType == null) throw new Exception($"Could not find encryptor type {Secret.EncryptionType}");
-            var decryptor = _serviceProvider.GetService(decryptorType) as ISecretEncryptor;
+            var decryptor = _serviceProvider.GetService(decryptorType) as ISymmetricEncryptor;
             if (decryptor == null) throw new Exception($"Encryption type {Secret.EncryptionType} does not inherit from ISecretEncryptor");
             
             return decryptor.Decrypt(Secret.EncryptedText, DecryptionKeys);

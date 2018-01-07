@@ -12,7 +12,7 @@
     <RepositoryUrl>https://github.com/Passaword/Passaword</RepositoryUrl>
     <PackageTags>core cryptography</PackageTags>
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/34607635?s=200&amp;v=4</PackageIconUrl>
-    <Version>0.1.5</Version>
+    <Version>0.2.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Passaword.Constants\Passaword.Constants.csproj" />
+    <ProjectReference Include="..\Passaword.Encryption\Passaword.Encryption.csproj" />
     <ProjectReference Include="..\Passaword.Messaging\Passaword.Messaging.csproj" />
   </ItemGroup>
 

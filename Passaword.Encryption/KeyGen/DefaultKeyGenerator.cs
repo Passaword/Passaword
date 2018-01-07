@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Configuration;
+using Passaword.Encryption.Utils;
 
-namespace Passaword.KeyGen
+namespace Passaword.Encryption.KeyGen
 {
     public class DefaultKeyGenerator : IKeyGenerator
     {
@@ -59,6 +61,19 @@ namespace Passaword.KeyGen
             var bytes = GetRandomBytes(length);
 
             return Convert.ToBase64String(bytes);
+        }
+
+        public string DeriveKey(string passphrase, byte[] salt, int iterationCount = 10000, KeyDerivationPrf prf = KeyDerivationPrf.HMACSHA256, int numBytes = 32)
+        {
+            var key = KeyDerivation.Pbkdf2(
+                password: passphrase,
+                salt: salt,
+                prf: prf,
+                iterationCount: iterationCount,
+                numBytesRequested: numBytes
+            );
+
+            return key.ToHex();
         }
     }
 }

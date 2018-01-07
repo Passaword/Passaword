@@ -3,7 +3,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Logging;
 using Passaword.Constants;
-using Passaword.KeyGen;
 using Passaword.Utils;
 
 namespace Passaword.Validation.UserEmail

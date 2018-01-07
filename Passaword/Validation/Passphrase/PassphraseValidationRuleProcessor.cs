@@ -3,7 +3,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Logging;
 using Passaword.Constants;
-using Passaword.KeyGen;
+using Passaword.Encryption.KeyGen;
+using Passaword.Encryption.Utils;
 using Passaword.Utils;
 
 namespace Passaword.Validation.Passphrase
@@ -24,14 +25,7 @@ namespace Passaword.Validation.Passphrase
 
         private string GetEncryptionKey(string passphrase, PassphraseValidationData options)
         {
-            var key = KeyDerivation.Pbkdf2(
-                password: passphrase,
-                salt: Convert.FromBase64String(options.Salt),
-                prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: options.IterationCount,
-                numBytesRequested: 32
-            );
-            return key.ToHex();
+            return _keyGenerator.DeriveKey(passphrase, Convert.FromBase64String(options.Salt));
         }
 
         public override void CreateRule(SecretEncryptionContext encryptionContext, ClaimsPrincipal principal)

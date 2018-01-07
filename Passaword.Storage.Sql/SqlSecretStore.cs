@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Passaword.KeyGen;
+using Passaword.Encryption.KeyGen;
 
 namespace Passaword.Storage.Sql
 {

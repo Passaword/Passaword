@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Passaword.KeyGen;
+using Passaword.Encryption.KeyGen;
 
 namespace Passaword.Storage
 {
