@@ -13,7 +13,7 @@
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/34607635?s=200&amp;v=4</PackageIconUrl>
     <RepositoryUrl>https://github.com/Passaword/Passaword</RepositoryUrl>
     <PackageTags>core cryptography sql</PackageTags>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Passaword.Encryption\Passaword.Encryption.csproj" />
     <ProjectReference Include="..\Passaword\Passaword.csproj" />
   </ItemGroup>
 
